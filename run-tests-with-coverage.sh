@@ -174,8 +174,8 @@ cat << 'HTML_EOF' > "$REPORT_DIR/index.html"
 <body>
     <div class="container">
         <header>
-            <h1>📊 Отчеты покрытия кода тестами (JaCoCo Coverage)</h1>
-            <p class="subtitle">Система управления сотрудниками • Микросервисная архитектура (Лабораторная работа №2)</p>
+            <h1>Отчеты покрытия кода тестами (JaCoCo Coverage)</h1>
+            <p class="subtitle">Система управления сотрудниками • Микросервисная архитектура (Лабораторная работа №3)</p>
         </header>
 
         <div class="grid">
@@ -233,7 +233,7 @@ cat << 'HTML_EOF' > "$REPORT_DIR/index.html"
         </div>
 
         <div class="tip-box">
-            <strong>💡 Как смотреть покрытие прямо в IntelliJ IDEA:</strong><br>
+            <strong>Как смотреть покрытие прямо в IntelliJ IDEA:</strong><br>
             В выпадающем списке вариантов запуска (Run Configurations) в верхней панели выберите <code>All Tests with Coverage</code> и нажмите кнопку <b>Run with Coverage</b> (зеленый щиток со стрелкой) или <b>Run</b>. В среде появится панель <i>Coverage</i> с разбивкой по пакетам, классам и подсветкой строчек в редакторе (зеленым/красным).
         </div>
     </div>

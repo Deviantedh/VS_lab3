@@ -122,15 +122,15 @@ function updateAuthUI() {
 
   if (usernameEl) usernameEl.textContent = login;
   if (avatarEl) {
-    avatarEl.textContent = role === 'ADMIN' ? '👑' : (role === 'HR' ? '💼' : (role === 'MANAGER' ? '📋' : '☕'));
+    avatarEl.textContent = login ? login.charAt(0).toUpperCase() : 'U';
   }
   if (roleBadgeEl) {
     roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;
     let roleTitle = role;
-    if (role === 'ADMIN') roleTitle = '👑 ADMIN (Супервайзер)';
-    else if (role === 'HR') roleTitle = '💼 HR (Кадры)';
-    else if (role === 'MANAGER') roleTitle = '📋 MANAGER (Управляющий)';
-    else if (role === 'EMPLOYEE') roleTitle = `☕ EMPLOYEE (Сотрудник #${empId || '?'})`;
+    if (role === 'ADMIN') roleTitle = 'ADMIN (Супервайзер)';
+    else if (role === 'HR') roleTitle = 'HR (Кадры)';
+    else if (role === 'MANAGER') roleTitle = 'MANAGER (Управляющий)';
+    else if (role === 'EMPLOYEE') roleTitle = `EMPLOYEE (Сотрудник #${empId || '?'})`;
     roleBadgeEl.textContent = roleTitle;
   }
 
@@ -2080,16 +2080,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       const res = await authFetch(`${API_URL}/employees/1`);
       if (res.ok) {
         const data = await res.json();
-        resEl.textContent = `✅ 200 OK: Доступ разрешен (Роль ${auth.getRole()} имеет доступ к сотруднику ${data.name})`;
+        resEl.textContent = `200 OK: Доступ разрешен (Роль ${auth.getRole()} имеет доступ к сотруднику ${data.name})`;
         resEl.className = "isolation-result-text success";
       } else if (res.status === 403) {
-        resEl.textContent = `⛔ 403 Forbidden: Spring Security успешно запретил доступ! "Сотрудник имеет доступ только к собственной информации"`;
+        resEl.textContent = `403 Forbidden: Spring Security успешно запретил доступ! "Сотрудник имеет доступ только к собственной информации"`;
         resEl.className = "isolation-result-text denied";
       } else {
         resEl.textContent = `Ответ сервера: HTTP ${res.status}`;
       }
     } catch (err) {
-      resEl.textContent = `⛔ Изоляция активна: ${err.message}`;
+      resEl.textContent = `Изоляция активна: ${err.message}`;
       resEl.className = "isolation-result-text denied";
     }
   });

@@ -67,38 +67,38 @@
         <!-- Панель JWT Авторизации -->
         <div class="user-auth-bar" id="user-auth-bar">
           <div class="auth-user-info" id="auth-user-info">
-            <span class="auth-avatar" id="auth-avatar">👤</span>
+            <span class="auth-avatar" id="auth-avatar">U</span>
             <div class="auth-details">
               <span class="auth-username" id="auth-username">admin</span>
-              <span class="badge badge-red" id="auth-role-badge">👑 ADMIN (Супервайзер)</span>
+              <span class="badge badge-red" id="auth-role-badge">ADMIN (Супервайзер)</span>
             </div>
           </div>
 
           <button type="button" class="btn btn-secondary btn-sm" id="btn-inspect-jwt" title="Просмотреть текущий JWT токен и claims">
-            🔑 JWT
+            JWT
           </button>
 
           <!-- Быстрое переключение учетной записи -->
           <div class="dropdown-container">
             <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-switch" title="Быстро войти под другой системной ролью">
-              🔄 Сменить роль ▾
+              Сменить роль ▾
             </button>
             <div class="dropdown-menu" id="quick-switch-menu" style="display: none;">
               <div class="dropdown-header">Быстрый вход для защиты (1 клик):</div>
               <button type="button" class="dropdown-item demo-quick-login" data-login="admin" data-pass="1234">
-                <strong>👑 admin</strong> &nbsp;(Супервайзер / ADMIN)
+                <strong>admin</strong> &nbsp;(Супервайзер / ADMIN)
               </button>
               <button type="button" class="dropdown-item demo-quick-login" data-login="hr_morozova" data-pass="1234">
-                <strong>💼 hr_morozova</strong> &nbsp;(Кадровик / HR)
+                <strong>hr_morozova</strong> &nbsp;(Кадровик / HR)
               </button>
               <button type="button" class="dropdown-item demo-quick-login" data-login="manager_sokolov" data-pass="1234">
-                <strong>📋 manager_sokolov</strong> &nbsp;(Управляющий / MANAGER)
+                <strong>manager_sokolov</strong> &nbsp;(Управляющий / MANAGER)
               </button>
               <button type="button" class="dropdown-item demo-quick-login" data-login="barista_dmitry" data-pass="1234">
-                <strong>☕ barista_dmitry</strong> &nbsp;(Бариста / EMPLOYEE #2)
+                <strong>barista_dmitry</strong> &nbsp;(Бариста / EMPLOYEE #2)
               </button>
               <button type="button" class="dropdown-item demo-quick-login" data-login="barista_anastasia" data-pass="1234">
-                <strong>☕ barista_anastasia</strong> &nbsp;(Бариста / EMPLOYEE #3)
+                <strong>barista_anastasia</strong> &nbsp;(Бариста / EMPLOYEE #3)
               </button>
             </div>
           </div>
@@ -283,18 +283,18 @@
           </div>
           <div class="lab3-features-grid">
             <div class="lab3-feature-item">
-              <strong>👑 Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (роль <code>ADMIN</code>). Для остальных ролей создание заблокировано Spring Security.
+              <strong>Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (роль <code>ADMIN</code>). Для остальных ролей создание заблокировано Spring Security.
             </div>
             <div class="lab3-feature-item">
-              <strong>🔒 Безопасность паролей:</strong> Все пароли хэшируются через <code>BCrypt</code> и никогда не возвращаются в ответах API (защищено аннотацией <code>WRITE_ONLY</code>).
+              <strong>Безопасность паролей:</strong> Все пароли хэшируются через <code>BCrypt</code> и никогда не возвращаются в ответах API (защищено аннотацией <code>WRITE_ONLY</code>).
             </div>
             <div class="lab3-feature-item">
-              <strong>🧪 Изоляция данных:</strong> Линейный персонал (<code>EMPLOYEE</code>) видит только свою учетную запись. Чужие профили недоступны (<code>403 Forbidden</code>).
+              <strong>Изоляция данных:</strong> Линейный персонал (<code>EMPLOYEE</code>) видит только свою учетную запись. Чужие профили недоступны (<code>403 Forbidden</code>).
             </div>
           </div>
           <div class="lab3-actions" style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
             <button type="button" class="btn btn-warning btn-sm" id="btn-test-data-isolation">
-              🧪 Протестировать изоляцию данных (Запрос чужого ID с токеном)
+              Протестировать изоляцию данных (Запрос чужого ID с токеном)
             </button>
             <span id="data-isolation-result" class="isolation-result-text"></span>
           </div>
@@ -585,7 +585,7 @@
           <label for="user-password">Пароль (хэшируется BCrypt при сохранении) *</label>
           <input type="password" id="user-password" class="form-control" placeholder="Например: 1234 (мин. 4 символа)">
           <small style="color: var(--text-muted); font-size: 12px; margin-top: 4px; display: block;">
-            🔒 Хэш пароля никогда не возвращается в ответах API.
+            Хэш пароля никогда не возвращается в ответах API.
           </small>
         </div>
         <div class="form-group">
@@ -783,7 +783,7 @@
   <!-- Модалка: Аутентификация (JWT Login) -->
   <dialog id="modal-auth" style="max-width: 520px; width: 92%;">
     <div class="modal-header">
-      <h4>🔐 Вход в Систему (Spring Security + JWT)</h4>
+      <h4>Вход в Систему (Spring Security + JWT)</h4>
     </div>
     <div class="modal-body">
       <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
@@ -796,16 +796,16 @@
         </label>
         <div class="demo-accounts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
           <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="admin" data-pass="1234">
-            👑 <strong>admin</strong> <small>(Супервайзер)</small>
+            <strong>admin</strong> <small>(Супервайзер)</small>
           </button>
           <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="hr_morozova" data-pass="1234">
-            💼 <strong>hr_morozova</strong> <small>(Кадры)</small>
+            <strong>hr_morozova</strong> <small>(Кадры)</small>
           </button>
           <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="manager_sokolov" data-pass="1234">
-            📋 <strong>manager_sokolov</strong> <small>(Управляющий)</small>
+            <strong>manager_sokolov</strong> <small>(Управляющий)</small>
           </button>
           <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_dmitry" data-pass="1234">
-            ☕ <strong>barista_dmitry</strong> <small>(Бариста #2)</small>
+            <strong>barista_dmitry</strong> <small>(Бариста #2)</small>
           </button>
         </div>
       </div>
@@ -837,14 +837,14 @@
   <!-- Модалка: Инспектор JWT токена -->
   <dialog id="modal-jwt-inspector" style="max-width: 600px; width: 92%;">
     <div class="modal-header">
-      <h4>🔑 Инспектор JWT токена (Spring Security)</h4>
+      <h4>Инспектор JWT токена (Spring Security)</h4>
       <button type="button" class="btn btn-secondary btn-sm btn-close-modal">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
         <label>Сырой JWT Bearer токен (передается в <code>Authorization: Bearer ...</code>):</label>
         <textarea id="jwt-raw-token" class="form-control" rows="4" readonly style="font-family: monospace; font-size: 11px; word-break: break-all; background: #f8fafc;"></textarea>
-        <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 6px;" id="btn-copy-jwt">📋 Скопировать токен</button>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 6px;" id="btn-copy-jwt">Скопировать токен</button>
       </div>
 
       <div class="form-group" style="margin-top: 16px;">

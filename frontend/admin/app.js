@@ -187,15 +187,17 @@ function updateAuthUI() {
 
   const role = auth.getRole();
   const login = auth.getLogin();
+  const avatarEl = document.getElementById('auth-avatar');
+  if (avatarEl) avatarEl.textContent = login ? login.charAt(0).toUpperCase() : 'U';
 
   if (usernameEl) usernameEl.textContent = login;
   if (roleBadgeEl) {
     roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;
     let roleTitle = role;
-    if (role === 'ADMIN') roleTitle = '👑 ADMIN (Супервайзер)';
-    else if (role === 'HR') roleTitle = '💼 HR (Кадры)';
-    else if (role === 'MANAGER') roleTitle = '📋 MANAGER (Управляющий)';
-    else if (role === 'EMPLOYEE') roleTitle = '☕ EMPLOYEE (Сотрудник)';
+    if (role === 'ADMIN') roleTitle = 'ADMIN (Супервайзер)';
+    else if (role === 'HR') roleTitle = 'HR (Кадры)';
+    else if (role === 'MANAGER') roleTitle = 'MANAGER (Управляющий)';
+    else if (role === 'EMPLOYEE') roleTitle = 'EMPLOYEE (Сотрудник)';
     roleBadgeEl.textContent = roleTitle;
   }
 
@@ -210,7 +212,7 @@ function updateAuthUI() {
       addBtn.disabled = true;
       addBtn.style.opacity = '0.5';
       addBtn.title = 'Создавать пользователей могут только супервайзеры (ADMIN)';
-      addBtn.textContent = '🔒 Только супервайзер (ADMIN)';
+      addBtn.textContent = 'Только супервайзер (ADMIN)';
     }
   }
 
@@ -605,7 +607,7 @@ async function loadUsers() {
       tr.innerHTML = `
         <td><strong>#${u.id}</strong></td>
         <td><code>${escapeHtml(u.login)}</code></td>
-        <td><span class="badge badge-gray" title="Пароли захэшированы алгоритмом BCrypt и никогда не отдаются в ответах API">🔒 BCrypt (скрыт)</span></td>
+        <td><span class="badge badge-gray" title="Пароли захэшированы алгоритмом BCrypt и никогда не отдаются в ответах API">BCrypt (скрыт)</span></td>
         <td>${empLabel}</td>
         <td>
           <span class="badge ${getRoleBadgeClass(u.roleCode)}" style="font-weight: 600;">
@@ -623,7 +625,7 @@ async function loadUsers() {
             ${auth.getRole() === "ADMIN" 
               ? `<button class="btn btn-secondary btn-sm" onclick="openEditUserRoleModal(${u.id})">Изменить роль</button>
                  <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${escapeHtml(u.login)}')">Удалить</button>`
-              : `<span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">🔒 Только ADMIN</span>`
+              : `<span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Только ADMIN</span>`
             }
           </div>
         </td>
@@ -1734,16 +1736,16 @@ window.addEventListener('DOMContentLoaded', async () => {
       const res = await authFetch(`${API_URL}/employees/1`);
       if (res.ok) {
         const data = await res.json();
-        resEl.textContent = `✅ 200 OK: Доступ разрешен (Роль ${auth.getRole()} имеет доступ к сотруднику: ${data.name})`;
+        resEl.textContent = `200 OK: Доступ разрешен (Роль ${auth.getRole()} имеет доступ к сотруднику: ${data.name})`;
         resEl.className = "isolation-result-text success";
       } else if (res.status === 403) {
-        resEl.textContent = `⛔ 403 Forbidden: Spring Security успешно запретил доступ! "Сотрудник имеет доступ только к собственной информации"`;
+        resEl.textContent = `403 Forbidden: Spring Security успешно запретил доступ! "Сотрудник имеет доступ только к собственной информации"`;
         resEl.className = "isolation-result-text denied";
       } else {
         resEl.textContent = `Ответ сервера: HTTP ${res.status}`;
       }
     } catch (err) {
-      resEl.textContent = `⛔ Изоляция активна: ${err.message}`;
+      resEl.textContent = `Изоляция активна: ${err.message}`;
       resEl.className = "isolation-result-text denied";
     }
   });
