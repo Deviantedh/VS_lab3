@@ -1,22 +1,54 @@
 :root {
+  /* Frutiger Aero Color Palette */
   --primary: #0284c7;
-  --primary-hover: #0369a1;
+  --primary-hover: #0ea5e9;
+  --primary-active: #0369a1;
   --primary-light: #e0f2fe;
+  
   --success: #16a34a;
+  --success-hover: #22c55e;
+  --success-active: #15803d;
   --success-light: #dcfce7;
+  
   --warning: #d97706;
+  --warning-hover: #f59e0b;
+  --warning-active: #b45309;
   --warning-light: #fef9c3;
+  
   --danger: #dc2626;
+  --danger-hover: #ef4444;
+  --danger-active: #b91c1c;
   --danger-light: #fee2e2;
-  --bg: #f1f5f9;
-  --surface: #ffffff;
-  --border: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --radius: 12px;
+
+  /* Glass & Atmosphere */
+  --sky-top: #cbeafd;
+  --sky-mid: #e3f3fc;
+  --sky-bottom: #daf0fa;
+  --surface-glass: rgba(255, 255, 255, 0.78);
+  --surface-glass-hover: rgba(255, 255, 255, 0.9);
+  --surface-glass-solid: rgba(248, 252, 255, 0.94);
+  
+  --border-glass: rgba(255, 255, 255, 0.85);
+  --border-glass-rim: rgba(147, 197, 235, 0.45);
+  
+  --text-main: #0c4a6e;
+  --text-dark: #082f49;
+  --text-muted: #527993;
+  
+  --radius-lg: 20px;
+  --radius: 14px;
   --radius-sm: 8px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --radius-pill: 9999px;
+  
+  --aero-shadow: 
+    0 10px 28px -4px rgba(12, 74, 110, 0.14),
+    0 4px 10px -2px rgba(12, 74, 110, 0.08),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+    
+  --aero-shadow-lg: 
+    0 18px 40px -6px rgba(12, 74, 110, 0.2),
+    0 8px 16px -4px rgba(12, 74, 110, 0.12),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 1);
 }
 
 * {
@@ -26,133 +58,220 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg);
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Lucida Grande", sans-serif;
   color: var(--text-main);
   line-height: 1.5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: 
+    radial-gradient(ellipse 70% 40% at 50% -10%, rgba(125, 211, 252, 0.55) 0%, transparent 60%),
+    radial-gradient(circle at 10% 20%, rgba(167, 243, 208, 0.35) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(186, 230, 253, 0.45) 0%, transparent 50%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-bottom) 100%) fixed;
+  background-attachment: fixed;
 }
 
-/* Header */
+/* ================= Frutiger Aero Header ================= */
 header.app-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(235, 246, 254, 0.8) 100%);
+  backdrop-filter: blur(16px) saturate(190%);
+  -webkit-backdrop-filter: blur(16px) saturate(190%);
+  border-bottom: 1px solid var(--border-glass-rim);
+  box-shadow: 
+    0 4px 20px rgba(12, 74, 110, 0.08),
+    inset 0 -1px 2px rgba(255, 255, 255, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 1);
+  padding: 12px 28px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
 .brand-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
+/* Iconic Frutiger Glass Orb / Gem Logo */
 .brand-badge {
-  background: var(--primary);
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #ffffff;
+  background: linear-gradient(180deg, #38bdf8 0%, #0284c7 50%, #0369a1 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 4px 12px rgba(2, 132, 199, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgba(3, 105, 161, 0.4);
+  text-shadow: 0 1px 2px rgba(3, 105, 161, 0.6);
+  overflow: hidden;
+}
+
+.brand-badge::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 3px;
+  right: 3px;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 9px 9px 40% 40%;
+  pointer-events: none;
 }
 
 .brand-section h1 {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.2px;
 }
 
-.user-selector-container {
+/* ================= Aero Glass Auth Bar ================= */
+.user-auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 249, 255, 0.65) 100%);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-glass);
+  box-shadow: 
+    0 3px 10px rgba(12, 74, 110, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
+}
+
+.auth-user-info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.user-selector-container label {
+/* Glossy Avatar Orb */
+.auth-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #d8f1fe 55%, #bae6fd 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 
+    0 2px 6px rgba(2, 132, 199, 0.25),
+    inset 0 1px 2px rgba(255, 255, 255, 1),
+    inset 0 -1px 3px rgba(3, 105, 161, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 800;
+  color: #0284c7;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-.form-select {
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  font-size: 14px;
-  background: #ffffff;
-  color: var(--text-main);
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
+.auth-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.form-select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-light);
+.auth-username {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
-/* Main Layout */
+/* ================= Main Layout ================= */
 .main-wrapper {
   max-width: 1240px;
   width: 100%;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 26px 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
   flex-grow: 1;
 }
 
-/* Tab Navigation */
+/* ================= Frutiger Aero Tabs ================= */
 nav.employee-nav {
   display: flex;
   gap: 8px;
-  background: var(--surface);
-  padding: 6px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(235, 246, 254, 0.6) 100%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  padding: 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-glass);
+  box-shadow: var(--aero-shadow);
   overflow-x: auto;
 }
 
 .tab-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: none;
+  justify-content: center;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: transparent;
   color: var(--text-muted);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
 }
 
 .tab-btn:hover {
-  background: var(--primary-light);
+  background: rgba(255, 255, 255, 0.65);
   color: var(--primary);
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.1);
 }
 
+/* Active Glossy Tab Pill */
 .tab-btn.active {
-  background: var(--primary);
+  background: linear-gradient(180deg, 
+    #56bafc 0%, 
+    #299fe8 49%, 
+    #1085d4 51%, 
+    #0b6ebd 100%);
   color: #ffffff;
+  border-color: #1a7bc7;
+  box-shadow: 
+    0 4px 12px rgba(11, 110, 189, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(0, 40, 90, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 30, 70, 0.6);
 }
 
-/* Content Tabs */
+.tab-btn.active::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 6%;
+  right: 6%;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border-radius: 9999px 9999px 50% 50%;
+  pointer-events: none;
+}
+
+/* Tab Content */
 .tab-content {
   display: none;
 }
@@ -160,22 +279,44 @@ nav.employee-nav {
 .tab-content.active {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
 }
 
-/* Cards & Panels */
+/* ================= Aero Glass Cards & Panels ================= */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 24px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--aero-shadow);
+  padding: 26px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top glass glare on cards */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.95) 25%, 
+    rgba(255, 255, 255, 0.95) 75%, 
+    rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
 }
 
 .card-title {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--text-dark);
   margin-bottom: 6px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .card-subtitle {
@@ -184,100 +325,177 @@ nav.employee-nav {
   margin-bottom: 20px;
 }
 
-/* Clock / Time Tracker widget */
+/* ================= Frutiger Aero Time Tracker Widget ================= */
 .tracker-box {
-  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  position: relative;
+  background: linear-gradient(135deg, 
+    #0284c7 0%, 
+    #0369a1 50%, 
+    #075985 100%);
   color: #ffffff;
-  border-radius: var(--radius);
-  padding: 28px;
+  border-radius: var(--radius-lg);
+  padding: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
-  box-shadow: var(--shadow-lg);
+  gap: 24px;
+  box-shadow: 
+    0 16px 36px rgba(2, 132, 199, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 6px rgba(3, 105, 161, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+
+/* Water / Sky glass shimmer on tracker box */
+.tracker-box::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 140%;
+  height: 100%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 65%);
+  pointer-events: none;
+  transform: rotate(-4deg);
 }
 
 .tracker-time h2 {
-  font-size: 38px;
-  font-weight: 800;
+  font-size: 42px;
+  font-weight: 900;
   letter-spacing: -0.5px;
+  text-shadow: 0 2px 8px rgba(0, 30, 60, 0.5);
+  font-variant-numeric: tabular-nums;
 }
 
 .tracker-time p {
   font-size: 14px;
-  opacity: 0.9;
+  opacity: 0.92;
+  text-shadow: 0 1px 2px rgba(0, 30, 60, 0.4);
 }
 
 .tracker-actions {
   display: flex;
-  gap: 12px;
+  gap: 14px;
 }
 
+/* Tracker Glossy Pill Buttons (Matching Reference) */
 .btn-tracker {
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  border: none;
+  position: relative;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  transition: transform 0.1s ease, filter 0.15s ease;
+  justify-content: center;
+  letter-spacing: 0.4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.btn-tracker:active {
-  transform: scale(0.98);
+.btn-tracker::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 6%;
+  right: 6%;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border-radius: 9999px 9999px 50% 50%;
+  pointer-events: none;
 }
 
 .btn-check-in {
-  background: #22c55e;
+  background: linear-gradient(180deg, #74d84b 0%, #44bd1b 49%, #34a810 51%, #268b07 100%);
   color: #ffffff;
+  border-color: #278809;
+  box-shadow: 
+    0 6px 16px rgba(38, 139, 7, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 3px rgba(10, 60, 5, 0.4);
 }
 
 .btn-check-in:hover {
-  filter: brightness(1.08);
+  background: linear-gradient(180deg, #85e85c 0%, #51cd27 49%, #3eb618 51%, #2d9e0b 100%);
+  box-shadow: 
+    0 8px 20px rgba(38, 139, 7, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.btn-check-in:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(0, 40, 0, 0.4);
 }
 
 .btn-check-out {
-  background: #ef4444;
+  background: linear-gradient(180deg, #f85b5b 0%, #e62828 49%, #cb1818 51%, #a80c0c 100%);
   color: #ffffff;
+  border-color: #a00f0f;
+  box-shadow: 
+    0 6px 16px rgba(168, 12, 12, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 3px rgba(60, 5, 5, 0.4);
 }
 
 .btn-check-out:hover {
-  filter: brightness(1.08);
+  background: linear-gradient(180deg, #ff6e6e 0%, #f33939 49%, #dc2525 51%, #bd1515 100%);
+  box-shadow: 
+    0 8px 20px rgba(168, 12, 12, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
 }
 
-/* Shifts Cards Grid */
+.btn-check-out:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(60, 0, 0, 0.4);
+}
+
+/* ================= Shifts Cards Grid ================= */
 .shifts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
 .shift-tile {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 248, 255, 0.75) 100%);
+  border: 1px solid var(--border-glass);
   border-radius: var(--radius);
-  padding: 18px;
-  box-shadow: var(--shadow);
+  padding: 20px;
+  box-shadow: 
+    0 4px 14px rgba(12, 74, 110, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95);
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-left: 5px solid var(--primary);
+  border-left: 6px solid #0284c7;
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.shift-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 22px rgba(12, 74, 110, 0.14),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
 }
 
 .shift-tile-date {
   font-size: 16px;
-  font-weight: 700;
-  color: var(--text-main);
+  font-weight: 800;
+  color: var(--text-dark);
 }
 
 .shift-tile-time {
   font-size: 14px;
-  color: var(--primary);
-  font-weight: 600;
+  color: #0284c7;
+  font-weight: 700;
 }
 
 .shift-tile-meta {
@@ -285,62 +503,107 @@ nav.employee-nav {
   color: var(--text-muted);
 }
 
-/* Tables */
-table.styled-table {
+/* ================= Aero Glass Tables ================= */
+table.styled-table, table.data-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 14px;
   text-align: left;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 
+    0 2px 10px rgba(12, 74, 110, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border-glass-rim);
 }
 
-table.styled-table th {
-  padding: 12px 14px;
-  background: #f8fafc;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-  font-weight: 600;
+table.styled-table th, table.data-table th {
+  padding: 14px 16px;
+  background: linear-gradient(180deg, #f0f7fd 0%, #e0effa 100%);
+  color: var(--text-dark);
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--border-glass-rim);
+  border-right: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-table.styled-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
+table.styled-table th:last-child, table.data-table th:last-child {
+  border-right: none;
 }
 
-/* Badges */
+table.styled-table td, table.data-table td {
+  padding: 13px 16px;
+  background: rgba(255, 255, 255, 0.65);
+  border-bottom: 1px solid rgba(200, 225, 242, 0.5);
+  color: var(--text-main);
+  transition: background 0.12s ease;
+}
+
+table.styled-table tr:nth-child(even) td, table.data-table tr:nth-child(even) td {
+  background: rgba(244, 250, 254, 0.75);
+}
+
+table.styled-table tr:hover td, table.data-table tr:hover td {
+  background: rgba(224, 242, 254, 0.85);
+}
+
+table.styled-table tr:last-child td, table.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ================= Glossy Badges ================= */
 .badge {
   display: inline-flex;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.badge-green { background: var(--success-light); color: var(--success); }
-.badge-yellow { background: var(--warning-light); color: var(--warning); }
-.badge-red { background: var(--danger-light); color: var(--danger); }
-.badge-blue { background: var(--primary-light); color: var(--primary); }
-.badge-gray { background: #f1f5f9; color: #475569; }
-
-.btn-portal-role {
-  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--primary);
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.15s ease;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 
+    0 2px 5px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
-.btn-portal-role:hover {
-  background: var(--primary-hover);
+.badge-blue { 
+  background: linear-gradient(180deg, #56bafc 0%, #1085d4 50%, #0b6ebd 100%);
   color: #ffffff;
+  border-color: #1a7bc7;
+  text-shadow: 0 1px 1px rgba(0, 30, 70, 0.5);
 }
 
-/* Forms */
+.badge-green { 
+  background: linear-gradient(180deg, #74d84b 0%, #34a810 50%, #268b07 100%);
+  color: #ffffff;
+  border-color: #278809;
+  text-shadow: 0 1px 1px rgba(15, 60, 5, 0.5);
+}
+
+.badge-yellow { 
+  background: linear-gradient(180deg, #fbbf24 0%, #d97706 50%, #b45309 100%);
+  color: #ffffff;
+  border-color: #a15c07;
+  text-shadow: 0 1px 1px rgba(70, 35, 5, 0.5);
+}
+
+.badge-red { 
+  background: linear-gradient(180deg, #f85b5b 0%, #cb1818 50%, #a80c0c 100%);
+  color: #ffffff;
+  border-color: #a00f0f;
+  text-shadow: 0 1px 1px rgba(70, 5, 5, 0.5);
+}
+
+.badge-gray { 
+  background: linear-gradient(180deg, #ffffff 0%, #e6eff5 50%, #d4e3ee 100%);
+  color: #33556f;
+  border-color: #b0c9dc;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ================= Glossy Inputs & Forms ================= */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -356,40 +619,277 @@ table.styled-table td {
 
 .form-field label {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--text-main);
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
-.form-input {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+.form-input, .form-select, .form-control {
+  padding: 10px 16px;
+  border: 1px solid #b8d7ea;
+  border-radius: var(--radius);
   font-size: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+  color: var(--text-dark);
+  box-shadow: 
+    inset 0 1px 3px rgba(12, 74, 110, 0.1),
+    0 1px 1px rgba(255, 255, 255, 0.9);
   outline: none;
+  transition: all 0.15s ease;
 }
 
-.form-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-light);
+.form-input:focus, .form-select:focus, .form-control:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 
+    0 0 0 3px rgba(56, 189, 248, 0.35),
+    inset 0 1px 2px rgba(12, 74, 110, 0.08);
 }
 
-.btn-submit {
-  padding: 12px 24px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
+/* ================= Frutiger Aero Glossy Buttons ================= */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  border: 1px solid transparent;
 }
 
-.btn-submit:hover {
-  background: var(--primary-hover);
+.btn::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 6%;
+  right: 6%;
+  height: 48%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.12) 100%);
+  border-radius: 9999px 9999px 50% 50%;
+  pointer-events: none;
 }
 
-/* Toast */
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12px;
+}
+
+/* Primary Aqua Aero Pill */
+.btn-primary, .btn-submit {
+  background: linear-gradient(180deg, 
+    #56bafc 0%, 
+    #299fe8 49%, 
+    #1085d4 51%, 
+    #0b6ebd 100%);
+  color: #ffffff;
+  border-color: #1a7bc7;
+  box-shadow: 
+    0 4px 12px rgba(11, 110, 189, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(0, 40, 90, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 30, 70, 0.6);
+}
+
+.btn-primary:hover, .btn-submit:hover {
+  background: linear-gradient(180deg, 
+    #6bc3ff 0%, 
+    #3eaaf0 49%, 
+    #1a92e3 51%, 
+    #107acb 100%);
+  box-shadow: 
+    0 6px 16px rgba(11, 110, 189, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active, .btn-submit:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(0, 30, 80, 0.4);
+}
+
+/* Secondary Chrome Glass Button */
+.btn-secondary {
+  background: linear-gradient(180deg, 
+    #ffffff 0%, 
+    #f0f7fc 49%, 
+    #e1eff8 51%, 
+    #d1e5f3 100%);
+  color: var(--text-dark);
+  border-color: #b3d1e6;
+  box-shadow: 
+    0 3px 8px rgba(12, 74, 110, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -1px 2px rgba(140, 180, 210, 0.25);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(180deg, 
+    #ffffff 0%, 
+    #f8fcff 49%, 
+    #ecf6fd 51%, 
+    #deeffa 100%);
+  border-color: #9ac2dd;
+  box-shadow: 
+    0 5px 12px rgba(12, 74, 110, 0.16),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(12, 74, 110, 0.15);
+}
+
+/* Danger Ruby Button */
+.btn-danger {
+  background: linear-gradient(180deg, 
+    #f85b5b 0%, 
+    #e62828 49%, 
+    #cb1818 51%, 
+    #a80c0c 100%);
+  color: #ffffff;
+  border-color: #a00f0f;
+  box-shadow: 
+    0 4px 12px rgba(168, 12, 12, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -1px 2px rgba(60, 5, 5, 0.35);
+  text-shadow: 0 1px 2px rgba(60, 5, 5, 0.6);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(180deg, 
+    #ff6e6e 0%, 
+    #f33939 49%, 
+    #dc2525 51%, 
+    #bd1515 100%);
+  box-shadow: 
+    0 6px 16px rgba(168, 12, 12, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+}
+
+.btn-danger:active {
+  transform: translateY(1px);
+}
+
+/* Dropdown Menu (Aero Glass Window) */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--surface-glass-solid);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius);
+  box-shadow: var(--aero-shadow-lg);
+  padding: 8px;
+  min-width: 280px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dropdown-header {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-item {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.25) 0%, rgba(2, 132, 199, 0.15) 100%);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ================= Aero Glass Dialogs & Modals ================= */
+dialog {
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 255, 0.95) 100%);
+  box-shadow: 
+    0 24px 60px rgba(12, 74, 110, 0.28),
+    0 8px 24px rgba(12, 74, 110, 0.15),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  padding: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+dialog::backdrop {
+  background: radial-gradient(circle at 50% 50%, rgba(12, 74, 110, 0.4) 0%, rgba(8, 47, 73, 0.65) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modal-header {
+  padding: 18px 24px;
+  background: linear-gradient(180deg, #f0f8fd 0%, #dcf0fb 100%);
+  border-bottom: 1px solid var(--border-glass-rim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+.modal-header h4 {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  background: rgba(240, 248, 255, 0.7);
+  border-top: 1px solid var(--border-glass-rim);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ================= Toasts ================= */
 #toast-container {
   position: fixed;
   top: 20px;
@@ -401,372 +901,31 @@ table.styled-table td {
 }
 
 .toast {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 18px;
-  box-shadow: var(--shadow-lg);
+  background: var(--surface-glass-solid);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  box-shadow: var(--aero-shadow-lg);
   font-size: 14px;
-  min-width: 280px;
-  animation: slideIn 0.2s ease;
+  font-weight: 600;
+  color: var(--text-dark);
+  min-width: 290px;
+  animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.toast-success { border-left: 4px solid var(--success); }
-.toast-danger { border-left: 4px solid var(--danger); }
-.toast-info { border-left: 4px solid var(--primary); }
+.toast-success { 
+  border-left: 5px solid var(--success); 
+}
+.toast-danger { 
+  border-left: 5px solid var(--danger); 
+}
+.toast-info { 
+  border-left: 5px solid var(--primary); 
+}
 
 @keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
+  from { transform: translateX(110%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
-
-/* Common Buttons for Management */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.15s ease;
-  text-decoration: none;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: var(--primary-hover);
-}
-
-.btn-secondary {
-  background: #f1f5f9;
-  color: var(--text-main);
-  border-color: var(--border);
-}
-
-.btn-secondary:hover {
-  background: #e2e8f0;
-}
-
-.btn-danger {
-  background: var(--danger);
-  color: #ffffff;
-}
-
-.btn-danger:hover {
-  filter: brightness(0.9);
-}
-
-.btn-sm {
-  padding: 4px 10px;
-  font-size: 12px;
-}
-
-/* Grid columns layout */
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-}
-
-/* Modals (Native <dialog>) */
-dialog {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  padding: 0;
-  margin: auto;
-  max-width: 520px;
-  width: 90%;
-  background: var(--surface);
-}
-
-dialog::backdrop {
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(3px);
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h4 {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.modal-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.modal-footer {
-  padding: 14px 20px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  background: #fafafa;
-}
-
-/* Form Controls */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.form-control {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: #ffffff;
-  color: var(--text-main);
-  outline: none;
-  transition: border-color 0.15s ease;
-}
-
-.form-control:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-light);
-}
-
-/* Data Table */
-table.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-
-table.data-table th,
-table.data-table td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-table.data-table th {
-  background: #f8fafc;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-/* Shift Cards */
-.shift-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  background: #ffffff;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.1s ease;
-}
-
-.shift-card:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
-}
-
-.shift-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.shift-time {
-  font-weight: 700;
-  font-size: 15px;
-  color: var(--text-main);
-}
-
-.shift-meta {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.shift-employees-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-/* ================= Стили JWT Авторизации и Лаб 3 ================= */
-.user-auth-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg);
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-}
-
-.auth-user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.auth-avatar {
-  font-size: 18px;
-  background: #ffffff;
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.auth-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.auth-username {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-main);
-  line-height: 1.2;
-}
-
-.dropdown-container {
-  position: relative;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 6px;
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
-  min-width: 280px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  padding: 6px;
-}
-
-.dropdown-header {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 6px 10px 4px;
-}
-
-.dropdown-item {
-  background: none;
-  border: none;
-  padding: 8px 10px;
-  text-align: left;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: background 0.15s;
-}
-
-.dropdown-item:hover {
-  background: var(--primary-light);
-  color: var(--primary);
-}
-
-/* Карточка-уведомление требований ЛР3 */
-.lab3-notice-card {
-  background: #f0f7ff;
-  border: 1px solid #bfdbfe;
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  margin-bottom: 20px;
-}
-
-.lab3-notice-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.lab3-badge {
-  background: var(--primary);
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-}
-
-.lab3-features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
-  font-size: 13px;
-  color: var(--text-main);
-}
-
-.lab3-feature-item {
-  background: #ffffff;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid #dbeafe;
-}
-
-.isolation-result-text {
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.isolation-result-text.success {
-  color: var(--success);
-}
-
-.isolation-result-text.denied {
-  color: var(--danger);
-}
-
-.demo-accounts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.demo-login-btn {
-  padding: 8px 10px;
-  font-size: 12px;
-  text-align: left;
-  line-height: 1.3;
-}
-
