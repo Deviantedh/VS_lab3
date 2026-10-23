@@ -1,7 +1,7 @@
--- ===================================================================
+
 -- seed_data.sql
 -- Демонстрационные данные для Системы управления сотрудниками
--- ===================================================================
+
 
 -- Очистка таблиц перед заполнением (с сохранением структуры и Flyway)
 TRUNCATE TABLE 
@@ -42,13 +42,13 @@ INSERT INTO positions (title, created_at, updated_at) VALUES
 
 -- 4. Сотрудники
 INSERT INTO employees (name, phone, birth_date, hire_date, status, created_at, updated_at) VALUES
-    ('Смирнов Алексей Викторович', '+79991112233', '1995-04-12', '2023-01-10', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Иванов Дмитрий Сергеевич', '+79992223344', '1998-08-23', '2023-03-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Карамышева Анастасия Павловна', '+79993334455', '2001-11-05', '2023-06-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Кузнецова Екатерина Олеговна', '+79994445566', '2000-02-18', '2023-09-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Соколов Максим Андреевич', '+79995556677', '1997-07-29', '2024-01-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Морозова Ольга Дмитриевна', '+79996667788', '1996-12-04', '2022-11-20', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Петров Иван Николаевич', '+79997778899', '1999-05-14', '2024-02-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Смирнов Алексей Эспрессович', '+79991112233', '1995-04-12', '2023-01-10', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Иванов Дмитрий Капучинович', '+79992223344', '1998-08-23', '2023-03-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Карамышева Анастасия Сироповна', '+79993334455', '2001-11-05', '2023-06-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Кузнецова Екатерина Флэтвайтовна', '+79994445566', '2000-02-18', '2023-09-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Соколов Максим Дедлайнович', '+79995556677', '1997-07-29', '2024-01-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Морозова Ольга Отгуловна', '+79996667788', '1996-12-04', '2022-11-20', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Петров Иван Чаевоевич', '+79997778899', '1999-05-14', '2024-02-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 5. Учетные записи пользователей (users)
 INSERT INTO users (employee_id, role_id, login, password_hash, is_active, created_at, updated_at) VALUES
