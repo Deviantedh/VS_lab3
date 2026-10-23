@@ -42,21 +42,21 @@ INSERT INTO positions (title, created_at, updated_at) VALUES
 
 -- 4. Сотрудники
 INSERT INTO employees (name, phone, birth_date, hire_date, status, created_at, updated_at) VALUES
-    ('Смирнов Алексей Эспрессович', '+79991112233', '1995-04-12', '2023-01-10', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Иванов Дмитрий Капучинович', '+79992223344', '1998-08-23', '2023-03-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Карамышева Анастасия Сироповна', '+79993334455', '2001-11-05', '2023-06-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Кузнецова Екатерина Флэтвайтовна', '+79994445566', '2000-02-18', '2023-09-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Соколов Максим Дедлайнович', '+79995556677', '1997-07-29', '2024-01-15', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Морозова Ольга Отгуловна', '+79996667788', '1996-12-04', '2022-11-20', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    ('Петров Иван Чаевоевич', '+79997778899', '1999-05-14', '2024-02-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ('Иван Иванович Иванов', '+79999999999', '1995-04-12', '2026-01-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Пекарёв Пекарь Пекаревич', '+79999999996', '1998-08-23', '2026-06-25', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Выпечкина Слойка Печина', '+79999999995', '2001-11-05', '2026-08-22', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Круассанова Екатерина Слоёная', '+79994445566', '2000-02-18', '2023-09-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Менеджеров Менеджер Менеджерович', '+79999999998', '1997-07-29', '2025-04-30', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Злобная Клавдия Ефимова', '+79888888888', '1996-12-04', '2026-04-13', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Детский чикатило', '+79991299996', '1999-05-14', '2026-01-01', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 5. Учетные записи пользователей (users)
 INSERT INTO users (employee_id, role_id, login, password_hash, is_active, created_at, updated_at) VALUES
     (1, 0, 'admin', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (6, 1, 'hr_morozova', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (5, 2, 'manager_sokolov', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (2, 3, 'barista_dmitry', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (3, 3, 'barista_anastasia', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    (6, 1, 'zlobnaya', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (5, 2, 'managerov', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (2, 3, 'pekarev', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (3, 3, 'vypechkina', '$2a$10$jaqwfBceBD3rB8K2S/.8M.hlaDWlUDe/ZhC4d4RANQpCsE5vEVk6y', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- 6. Назначения сотрудников на точки и должности (employee_assignments)
 INSERT INTO employee_assignments (employee_id, branch_id, position_id, started_at, is_primary, created_at) VALUES

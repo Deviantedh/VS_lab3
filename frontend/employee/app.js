@@ -2099,9 +2099,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Инициализация авторизации
   auth.init();
   if (!auth.isAuthenticated()) {
-    // Автоматический вход под barista_dmitry при первом открытии кабинета сотрудника
+    // Автоматический вход под pekarev при первом открытии кабинета сотрудника
     try {
-      await auth.login("barista_dmitry", "1234");
+      await auth.login("pekarev", "1234");
     } catch (e) {
       openAuthModal();
     }
