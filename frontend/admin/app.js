@@ -183,7 +183,7 @@ function updateAuthUI() {
   if (!auth.isAuthenticated()) {
     if (usernameEl) usernameEl.textContent = 'Не авторизован';
     if (roleBadgeEl) {
-      roleBadgeEl.className = 'badge badge-gray';
+      roleBadgeEl.className = 'auth-role-tag';
       roleBadgeEl.textContent = 'Гость';
     }
     applyRolePermissions(null);
@@ -195,7 +195,7 @@ function updateAuthUI() {
 
   if (usernameEl) usernameEl.textContent = login;
   if (roleBadgeEl) {
-    roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;
+    roleBadgeEl.className = 'auth-role-tag';
     let roleTitle = role;
     if (role === 'ADMIN') roleTitle = 'ADMIN (Супервайзер)';
     else if (role === 'HR') roleTitle = 'HR (Кадры)';
@@ -523,7 +523,7 @@ async function loadEmployees() {
         ? empAssignments.map(a => `
             <div style="font-size: 12px; margin-bottom: 4px;">
               <strong>${escapeHtml(a.branchName)}</strong> — ${escapeHtml(a.positionTitle)}
-              ${a.isPrimary ? '<span class="badge badge-blue">Основная</span>' : '<span class="badge badge-gray">Совмещение</span>'}
+              ${a.isPrimary ? '<strong style="color: var(--text-dark); font-size: 11.5px; margin-left: 4px;">(основная)</strong>' : '<span style="color: var(--text-muted); font-size: 11.5px; margin-left: 4px;">(совмещение)</span>'}
             </div>
           `).join('')
         : '<span style="color: var(--text-muted); font-size: 12px;">Не назначен</span>';
@@ -540,7 +540,7 @@ async function loadEmployees() {
       const user = userByEmpId[emp.id];
       const roleHtml = user ? `
         <div style="font-size: 12px;">
-          <span class="badge ${getRoleBadgeClass(user.roleCode)}" style="font-weight: 600;">${user.roleCode} (Роль ${user.roleId})</span>
+          <strong style="color: var(--text-dark);">${user.roleCode}</strong> <span style="color: var(--text-muted); font-size: 11.5px;">(Роль ${user.roleId})</span>
           <div style="color: var(--text-muted); margin-top: 3px;">Логин: <code>${escapeHtml(user.login)}</code></div>
           ${!isManagerOnly ? `
             <button class="btn btn-secondary btn-sm" style="margin-top: 4px; padding: 2px 8px; font-size: 11px;"
@@ -610,12 +610,11 @@ async function loadUsers() {
       tr.innerHTML = `
         <td><strong>#${u.id}</strong></td>
         <td><code>${escapeHtml(u.login)}</code></td>
-        <td><span class="badge badge-gray" title="Пароли захэшированы алгоритмом BCrypt и никогда не отдаются в ответах API">BCrypt (скрыт)</span></td>
+        <td><code style="color: var(--text-muted); font-size: 12px;">••••••••</code></td>
         <td>${empLabel}</td>
         <td>
-          <span class="badge ${getRoleBadgeClass(u.roleCode)}" style="font-weight: 600;">
-            ${u.roleName || u.roleCode} (Роль ${u.roleId})
-          </span>
+          <strong style="color: var(--text-dark); font-size: 13.5px;">${u.roleName || u.roleCode}</strong>
+          <span style="color: var(--text-muted); font-size: 12px; margin-left: 4px;">(Роль ${u.roleId})</span>
         </td>
         <td>
           <span class="badge ${u.isActive ? 'badge-green' : 'badge-red'}">
@@ -813,7 +812,7 @@ async function loadShiftsForSchedule(scheduleId) {
 
     const headerNote = document.createElement('div');
     headerNote.style.marginBottom = '12px';
-    headerNote.innerHTML = `<span class="badge badge-blue">Всего смен в графике: ${totalCount || shifts.length}</span>`;
+    headerNote.innerHTML = `<span style="font-size: 13px; color: var(--text-muted);">Всего смен в графике: <strong style="color: var(--text-dark);">${totalCount || shifts.length}</strong></span>`;
     container.appendChild(headerNote);
 
     shifts.forEach(shift => {
@@ -883,7 +882,7 @@ async function loadRequests() {
       tr.innerHTML = `
         <td><strong>#${req.id}</strong></td>
         <td><strong>${escapeHtml(req.employeeName)}</strong></td>
-        <td><span class="badge badge-blue">${req.type}</span></td>
+        <td><strong style="color: var(--text-dark);">${req.type}</strong></td>
         <td>${datesStr}</td>
         <td><span class="badge ${badgeClass}">${req.status}</span></td>
         <td>${escapeHtml(req.resolutionComment || '—')}</td>
@@ -1241,7 +1240,7 @@ function openProcessRequestModal(requestId, empName, type, dates) {
   document.getElementById('process-request-id').value = requestId;
   document.getElementById('process-request-info').innerHTML = `
     Заявка <strong>#${requestId}</strong>: <strong>${escapeHtml(empName)}</strong><br>
-    Тип: <span class="badge badge-blue">${type}</span><br>
+    Тип: <strong>${type}</strong><br>
     Период: <strong>${dates}</strong>
   `;
   document.getElementById('modal-process-request').showModal();

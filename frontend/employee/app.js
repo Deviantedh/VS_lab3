@@ -112,7 +112,7 @@ function updateAuthUI() {
       avatarEl.innerHTML = '<img src="avatar.png" alt="Avatar" class="avatar-icon">';
     }
     if (roleBadgeEl) {
-      roleBadgeEl.className = 'badge badge-gray';
+      roleBadgeEl.className = 'auth-role-tag';
       roleBadgeEl.textContent = 'Гость';
     }
     updateRoleTabsVisibility(null);
@@ -128,7 +128,7 @@ function updateAuthUI() {
     avatarEl.innerHTML = '<img src="avatar.png" alt="Avatar" class="avatar-icon">';
   }
   if (roleBadgeEl) {
-    roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;
+    roleBadgeEl.className = 'auth-role-tag';
     let roleTitle = role;
     if (role === 'ADMIN') roleTitle = 'ADMIN (Супервайзер)';
     else if (role === 'HR') roleTitle = 'HR (Кадры)';
@@ -355,7 +355,7 @@ async function loadUserAccountForCurrentEmployee() {
   if (!roleBadge) return;
   const role = auth.getRole() || 'EMPLOYEE';
   roleBadge.textContent = `${role}`;
-  roleBadge.className = `badge ${getRoleBadgeClass(role)}`;
+  roleBadge.className = 'auth-role-tag';
   updateRoleTabsVisibility(role);
 }
 
@@ -653,7 +653,7 @@ async function loadMyRequests() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>#${req.id}</strong></td>
-        <td><span class="badge badge-blue">${req.type}</span></td>
+        <td><strong style="color: var(--text-dark);">${req.type}</strong></td>
         <td>${datesStr}</td>
         <td><span class="badge ${badgeClass}">${req.status}</span></td>
         <td>${escapeHtml(req.resolutionComment || 'Ожидает рассмотрения')}</td>
@@ -720,7 +720,7 @@ async function loadMyAbsences() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>#${a.id}</strong></td>
-        <td><span class="badge badge-blue">${a.type}</span></td>
+        <td><strong style="color: var(--text-dark);">${a.type}</strong></td>
         <td><strong>${a.dateFrom}</strong></td>
         <td><strong>${a.dateTo}</strong></td>
         <td>${escapeHtml(a.comment || 'Согласовано')}</td>
@@ -760,7 +760,7 @@ async function renderProfile() {
   const userHtml = user ? `
     <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); margin-top: 8px;">
       Логин: <code>${escapeHtml(user.login)}</code><br>
-      Роль в системе: <span class="badge ${getRoleBadgeClass(user.roleCode)}" style="font-weight: 600;">${user.roleName || user.roleCode} (Уровень: ${user.roleId})</span><br>
+      Роль в системе: <strong style="color: var(--text-dark);">${user.roleName || user.roleCode}</strong> <span style="color: var(--text-muted);">(Уровень: ${user.roleId})</span><br>
       Статус учетной записи: <span class="badge ${user.isActive ? 'badge-green' : 'badge-red'}">${user.isActive ? 'Активен' : 'Заблокирован'}</span>
     </div>
   ` : '<div style="color: var(--text-muted); margin-top: 4px;">Учётная запись не создана (обратитесь к администратору или HR)</div>';
@@ -862,7 +862,7 @@ async function loadMgrShiftsForSchedule(scheduleId) {
 
     const headerNote = document.createElement('div');
     headerNote.style.marginBottom = '12px';
-    headerNote.innerHTML = `<span class="badge badge-blue">Всего смен в графике: ${totalCount || shifts.length}</span>`;
+    headerNote.innerHTML = `<span style="font-size: 13px; color: var(--text-muted);">Всего смен в графике: <strong style="color: var(--text-dark);">${totalCount || shifts.length}</strong></span>`;
     container.appendChild(headerNote);
 
     shifts.forEach(shift => {
@@ -1048,7 +1048,7 @@ async function loadTeamRequests() {
       tr.innerHTML = `
         <td><strong>#${req.id}</strong></td>
         <td><strong>${escapeHtml(req.employeeName)}</strong></td>
-        <td><span class="badge badge-blue">${req.type}</span></td>
+        <td><strong style="color: var(--text-dark);">${req.type}</strong></td>
         <td>${datesStr}</td>
         <td><span class="badge ${badgeClass}">${req.status}</span></td>
         <td>${escapeHtml(req.resolutionComment || 'Ожидает решения')}</td>
@@ -1116,7 +1116,7 @@ async function loadHrEmployees() {
         ? empAssignments.map(a => `
             <div style="font-size: 12px; margin-bottom: 4px;">
               <strong>${escapeHtml(a.branchName)}</strong> — ${escapeHtml(a.positionTitle)}
-              ${a.isPrimary ? '<span class="badge badge-blue">Основная</span>' : '<span class="badge badge-gray">Совмещение</span>'}
+              ${a.isPrimary ? '<strong style="color: var(--text-dark); font-size: 11.5px; margin-left: 4px;">(основная)</strong>' : '<span style="color: var(--text-muted); font-size: 11.5px; margin-left: 4px;">(совмещение)</span>'}
             </div>
           `).join('')
         : '<span style="color: var(--text-muted); font-size: 12px;">Не назначен</span>';
@@ -1133,7 +1133,7 @@ async function loadHrEmployees() {
       const user = userByEmpId[emp.id];
       const roleHtml = user ? `
         <div style="font-size: 12px;">
-          <span class="badge ${getRoleBadgeClass(user.roleCode)}" style="font-weight: 600;">${user.roleCode} (Роль ${user.roleId})</span>
+          <strong style="color: var(--text-dark);">${user.roleCode}</strong> <span style="color: var(--text-muted); font-size: 11.5px;">(Роль ${user.roleId})</span>
           <div style="color: var(--text-muted); margin-top: 3px;">Логин: <code>${escapeHtml(user.login)}</code></div>
           <button class="btn btn-secondary btn-sm" style="margin-top: 4px; padding: 2px 8px; font-size: 11px;"
                   onclick="openEditUserRoleModal(${user.id})">Изменить роль</button>
@@ -1304,9 +1304,8 @@ async function loadHrUsers() {
         <td><code>${escapeHtml(u.login)}</code></td>
         <td>${empLabel}</td>
         <td>
-          <span class="badge ${getRoleBadgeClass(u.roleCode)}" style="font-weight: 600;">
-            ${u.roleName || u.roleCode} (Роль ${u.roleId})
-          </span>
+          <strong style="color: var(--text-dark); font-size: 13.5px;">${u.roleName || u.roleCode}</strong>
+          <span style="color: var(--text-muted); font-size: 12px; margin-left: 4px;">(Роль ${u.roleId})</span>
         </td>
         <td>
           <span class="badge ${u.isActive ? 'badge-green' : 'badge-red'}">
