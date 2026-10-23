@@ -91,7 +91,7 @@ const adminOnly = args.includes('--admin-only');
 const employeeOnly = args.includes('--employee-only');
 
 console.log('='.repeat(55));
-console.log('Запуск клиентских интерфейсов СУС (WFM Portal)');
+console.log('Запуск клиентских интерфейсов СУС');
 console.log('='.repeat(55));
 
 if (!employeeOnly) {

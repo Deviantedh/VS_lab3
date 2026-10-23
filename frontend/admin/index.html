@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>СУС WFM • Панель Управления (Admin)</title>
+  <title>СУС • Панель Управления</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,10 +14,10 @@
   <!-- Боковая панель навигации -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-icon">WFM</div>
+      <div class="brand-icon">СУС</div>
       <div>
-        <h1>СУС WFM</h1>
-        <span>Панель Администратора</span>
+        <h1>СУС</h1>
+        <span>Панель Управления</span>
       </div>
     </div>
 
@@ -275,31 +275,6 @@
 
       <!-- ПОЛЬЗОВАТЕЛИ И ДОСТУП -->
       <section id="section-users" class="section">
-        <!-- Инфо-баннер требований Лабораторной №3 -->
-        <div class="lab3-notice-card" id="lab3-users-notice">
-          <div class="lab3-notice-header">
-            <span class="lab3-badge">Лабораторная работа №3</span>
-            <h4>Контроль доступа, хэширование паролей и ролевая модель</h4>
-          </div>
-          <div class="lab3-features-grid">
-            <div class="lab3-feature-item">
-              <strong>Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (роль <code>ADMIN</code>). Для остальных ролей создание заблокировано Spring Security.
-            </div>
-            <div class="lab3-feature-item">
-              <strong>Безопасность паролей:</strong> Все пароли хэшируются через <code>BCrypt</code> и никогда не возвращаются в ответах API (защищено аннотацией <code>WRITE_ONLY</code>).
-            </div>
-            <div class="lab3-feature-item">
-              <strong>Изоляция данных:</strong> Линейный персонал (<code>EMPLOYEE</code>) видит только свою учетную запись. Чужие профили недоступны (<code>403 Forbidden</code>).
-            </div>
-          </div>
-          <div class="lab3-actions" style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-            <button type="button" class="btn btn-warning btn-sm" id="btn-test-data-isolation">
-              Протестировать изоляцию данных (Запрос чужого ID с токеном)
-            </button>
-            <span id="data-isolation-result" class="isolation-result-text"></span>
-          </div>
-        </div>
-
         <div class="panel">
           <div class="panel-header">
             <div>
@@ -398,7 +373,6 @@
         <div class="panel">
           <div class="panel-header">
             <h3>Учёт явок и отработанного времени (План / Факт)</h3>
-            <span class="badge badge-blue">ТРЕБОВАНИЕ ТЗ: Slice (Бесконечная прокрутка)</span>
           </div>
           <div class="panel-body table-responsive">
             <table class="data-table">

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>СУС WFM • Личный кабинет сотрудника</title>
+  <title>СУС • Кабинет Сотрудника</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,9 +13,9 @@
   <!-- Шапка приложения -->
   <header class="app-header">
     <div class="brand-section">
-      <div class="brand-badge">WFM</div>
+      <div class="brand-badge">СУС</div>
       <div>
-        <h1>СУС WFM • Кабинет Сотрудника</h1>
+        <h1>СУС • Кабинет Сотрудника</h1>
       </div>
     </div>
 
@@ -267,31 +267,6 @@
 
     <!-- ТАБ 5: МОЙ ПРОФИЛЬ -->
     <div id="tab-profile" class="tab-content">
-      <!-- Инфо-баннер требований Лабораторной №3 -->
-      <div class="lab3-notice-card" id="lab3-employee-notice">
-        <div class="lab3-notice-header">
-          <span class="lab3-badge">Лабораторная работа №3</span>
-          <h4>Контроль доступа, авторизация JWT и изоляция данных</h4>
-        </div>
-        <div class="lab3-features-grid">
-          <div class="lab3-feature-item">
-            <strong>JWT Bearer:</strong> Каждый запрос к микросервисам подписывается криптографическим токеном с правами роли в заголовке <code>Authorization</code>.
-          </div>
-          <div class="lab3-feature-item">
-            <strong>Изоляция данных (Data Isolation):</strong> Линейный сотрудник имеет доступ исключительно к собственной информации. Доступ к чужим карточкам или чужим сменам блокируется сервером (<code>403 Forbidden</code>).
-          </div>
-          <div class="lab3-feature-item">
-            <strong>Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (<code>ADMIN</code>). Линейный сотрудник не может изменять пользователей.
-          </div>
-        </div>
-        <div class="lab3-actions" style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-          <button type="button" class="btn btn-warning btn-sm" id="btn-test-data-isolation">
-            Проверить изоляцию данных (Запрос чужой карточки #1 с моим токеном)
-          </button>
-          <span id="data-isolation-result" class="isolation-result-text"></span>
-        </div>
-      </div>
-
       <div class="card">
         <h2 class="card-title">Карточка сотрудника</h2>
         <p class="card-subtitle">Персональные данные и назначения на ставки</p>
@@ -333,12 +308,9 @@
     <!-- ТАБ: ТАБЕЛЬ ЯВОК (ДЛЯ MANAGER / ADMIN) -->
     <div id="tab-mgr-attendance" class="tab-content">
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <div>
-            <h2 class="card-title">Табель явок персонала (План / Факт)</h2>
-            <p class="card-subtitle" style="margin-bottom: 0;">Учёт отработанного времени сотрудников филиалов с бесконечной прокруткой</p>
-          </div>
-          <span class="badge badge-blue">ТРЕБОВАНИЕ ТЗ: Slice (Бесконечная прокрутка)</span>
+        <div style="margin-bottom: 16px;">
+          <h2 class="card-title">Табель явок персонала (План / Факт)</h2>
+          <p class="card-subtitle" style="margin-bottom: 0;">Учёт отработанного времени сотрудников филиалов</p>
         </div>
 
         <div style="overflow-x: auto;">
