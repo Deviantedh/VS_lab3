@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="schedule-service: Tests (Coverage)" type="JUnit" factoryName="JUnit">
+    <module name="schedule-service" />
+    <option name="PACKAGE_NAME" value="portal.schedule" />
+    <option name="MAIN_CLASS_NAME" value="" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="package" />
+    <option name="VM_PARAMETERS" value="-XX:+EnableDynamicAgentLoading -Dtestcontainers.telemetry.disabled=true -Dspring.cloud.discovery.enabled=false -Deureka.client.enabled=false -Dspring.cloud.config.enabled=false" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <extension name="coverage" sample_coverage="true" track_test_folders="true" runner="idea">
+      <pattern>
+        <option name="PATTERN" value="portal.schedule.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

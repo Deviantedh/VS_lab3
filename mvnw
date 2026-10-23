@@ -32,6 +32,13 @@
 set -euf
 [ "${MVNW_VERBOSE-}" != debug ] || set -x
 
+# Автоматический выбор Java 21 LTS на macOS при наличии Java 25+
+if [ -z "${JAVA_HOME-}" ] || [ "$("${JAVA_HOME}/bin/java" -version 2>&1 | grep -o 'version "[0-9]*' | tr -dc '0-9')" -gt 24 ] 2>/dev/null; then
+  if [ -x /usr/libexec/java_home ] && /usr/libexec/java_home -v 21 >/dev/null 2>&1; then
+    export JAVA_HOME="$(/usr/libexec/java_home -v 21)"
+  fi
+fi
+
 # OS specific support.
 native_path() { printf %s\\n "$1"; }
 case "$(uname)" in

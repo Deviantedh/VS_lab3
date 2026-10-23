@@ -174,18 +174,28 @@ node frontend/server.js
 
 ## Тестирование и покрытие кода
 
-Все тесты запускаются через Maven Wrapper:
+Все тесты запускаются через Maven Wrapper или скрипт сбора покрытия:
 
 ```bash
 # Быстрый прогон тестов во всех микросервисах
 ./mvnw test
 
-# Запуск тестов со сбором JaCoCo покрытия
+# Запуск тестов со сбором JaCoCo покрытия во всех модулях и сборкой дашборда
 ./run-tests-with-coverage.sh
+
+# Быстрое открытие уже собранного дашборда в браузере
+./run-tests-with-coverage.sh --open
 ```
 
-В `employee-service` написан полный сьют тестов безопасности:
-* `SecurityIntegrationTest`: проверка сквозной аутентификации, 401 Unauthorized без токена, 403 Forbidden при нехватке прав, изоляции данных;
+### Запуск из IntelliJ IDEA
+В проект добавлены готовые Run Configurations (в выпадающем списке вариантов запуска вверху окна):
+* **All Tests with Coverage** — единый запуск всех JUnit тестов с подсветкой покрытия строк в редакторе;
+* **Maven: Сборка всех тестов и отчетов JaCoCo** — сборка и генерация отчетов во всех модулях через Maven;
+* **Модульные конфигурации** — `employee-service: Tests`, `attendance-service: Tests`, `schedule-service: Tests`, `gateway-service: Tests`, `common-dto: Tests`.
+
+### Сьют тестов безопасности (Требования ЛР3):
+* `SpringSecurityMockMvcIntegrationTest` — сквозное MockMvc-тестирование Spring Security фильтра: 401 Unauthorized без токена, 403 Forbidden при попытке создания пользователей не-ADMIN (только супервайзер), 403 Forbidden при попытке доступа линейного сотрудника к чужим профилям/карточкам, 201 Created для супервайзера, проверка отсутствия паролей и хэшей в моделях ответа;
+* `SecurityIntegrationTest` — проверка сквозной аутентификации, генерации JWT, хэширования паролей BCrypt, изоляции данных;
 * `JwtServiceTest`, `JwtAuthenticationFilterTest`, `UserPrincipalTest`, `SecurityConfigTest`;
 * `AuthControllerTest`, `AuthServiceTest`, `UserControllerTest`, `EmployeeControllerTest`.
 

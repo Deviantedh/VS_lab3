@@ -40,14 +40,17 @@ Config Server:               http://localhost:8888
 docker compose up -d postgres
 
 ---- Запуск всех unit & integration тестов во всех модулях:
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
 ./mvnw test
 
----- Запуск тестов со сбором JaCoCo покрытия и открытием отчета:
+---- Запуск тестов со сбором JaCoCo покрытия (сводный отчет в target/coverage-report/):
 ./run-tests-with-coverage.sh
 
----- Быстрое открытие уже сформированного JaCoCo отчета:
+---- Быстрое открытие дашборда покрытия в браузере:
 ./run-tests-with-coverage.sh --open
+
+---- Запуск тестов прямо в IntelliJ IDEA (вверху в выпадающем списке Run Configurations):
+1. Выбрать "All Tests with Coverage" -> нажать Run with Coverage (зеленый щиток)
+2. Или выбрать "Maven: Сборка всех тестов и отчетов JaCoCo" -> нажать Run
 
 ---- Тест распределенной транзакции явки:
 export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home"
