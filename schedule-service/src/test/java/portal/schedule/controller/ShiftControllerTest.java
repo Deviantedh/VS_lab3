@@ -36,6 +36,15 @@ class ShiftControllerTest {
     @Mock
     private ReactiveScheduleBridgeService bridgeService;
 
+    @Mock
+    private portal.schedule.client.EmployeeClient employeeClient;
+
+    @Mock
+    private portal.schedule.client.BranchClient branchClient;
+
+    @Mock
+    private portal.schedule.client.AttendanceClient attendanceClient;
+
     @InjectMocks
     private ShiftController shiftController;
 
@@ -175,5 +184,35 @@ class ShiftControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         verify(shiftService).delete(1L);
+    }
+
+    @Test
+    @DisplayName("checkEmployeeCircuitBreaker delegates to EmployeeClient")
+    void testCheckEmployeeCircuitBreaker() {
+        portal.dto.EmployeeDto.Response emp = portal.dto.EmployeeDto.Response.builder().id(1L).name("Test").build();
+        when(employeeClient.getEmployeeById(1L)).thenReturn(emp);
+
+        var response = shiftController.checkEmployeeCircuitBreaker(1L);
+        assertThat(response.getBody()).isEqualTo(emp);
+    }
+
+    @Test
+    @DisplayName("checkBranchCircuitBreaker delegates to BranchClient")
+    void testCheckBranchCircuitBreaker() {
+        portal.dto.BranchDto.Response branch = portal.dto.BranchDto.Response.builder().id(2L).name("Branch").build();
+        when(branchClient.getBranchById(2L)).thenReturn(branch);
+
+        var response = shiftController.checkBranchCircuitBreaker(2L);
+        assertThat(response.getBody()).isEqualTo(branch);
+    }
+
+    @Test
+    @DisplayName("checkAttendanceCircuitBreaker delegates to AttendanceClient")
+    void testCheckAttendanceCircuitBreaker() {
+        portal.dto.AttendanceRecordDto.Response att = portal.dto.AttendanceRecordDto.Response.builder().id(3L).build();
+        when(attendanceClient.getAttendanceById(3L)).thenReturn(att);
+
+        var response = shiftController.checkAttendanceCircuitBreaker(3L);
+        assertThat(response.getBody()).isEqualTo(att);
     }
 }

@@ -66,14 +66,14 @@
   </aside>
 
   <!-- Основная рабочая область -->
-  <main class="content-area">
+  <main class="content-area main-content">
     <header class="top-header">
       <div class="header-title">
         <h2 id="current-page-title">Сводка системы</h2>
         <p id="current-page-subtitle">Общий обзор состояния компаний и сотрудников</p>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <div class="header-controls" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
         <!-- Панель JWT Авторизации -->
         <div class="user-auth-bar" id="user-auth-bar">
           <div class="auth-user-info" id="auth-user-info">
@@ -130,26 +130,26 @@
       </div>
     </header>
 
-    <div class="page-container">
+    <div class="page-container content-body">
 
       <!-- 1. СВОДКА (DASHBOARD) -->
       <section id="section-dashboard" class="section active">
         <div class="stats-grid">
           <div class="stat-card">
-            <div class="label">Сотрудников в базе</div>
-            <div class="value" id="stat-employees-count">0</div>
+            <div class="stat-label label">Сотрудников в базе</div>
+            <div class="stat-value value" id="stat-employees-count">0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Филиалов / Точек</div>
-            <div class="value" id="stat-branches-count">0</div>
+            <div class="stat-label label">Филиалов / Точек</div>
+            <div class="stat-value value" id="stat-branches-count">0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Заявок на рассмотрении</div>
-            <div class="value" id="stat-requests-count">0</div>
+            <div class="stat-label label">Заявок на рассмотрении</div>
+            <div class="stat-value value" id="stat-requests-count">0</div>
           </div>
           <div class="stat-card">
-            <div class="label">Компаний (Сетей)</div>
-            <div class="value" id="stat-companies-count">0</div>
+            <div class="stat-label label">Компаний (Сетей)</div>
+            <div class="stat-value value" id="stat-companies-count">0</div>
           </div>
         </div>
 

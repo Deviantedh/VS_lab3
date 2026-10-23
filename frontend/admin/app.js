@@ -121,7 +121,7 @@ async function authFetch(url, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const response = await authFetch(url, { ...options, headers });
+  const response = await fetch(url, { ...options, headers });
 
   if (response.status === 401) {
     auth.clear();

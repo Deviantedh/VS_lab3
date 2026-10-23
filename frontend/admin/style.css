@@ -101,6 +101,7 @@ body {
 /* ================= Sidebar (Aero Glass Column) ================= */
 aside.sidebar {
   width: 270px;
+  min-width: 270px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(235, 246, 254, 0.65) 100%);
   backdrop-filter: blur(24px) saturate(200%);
   -webkit-backdrop-filter: blur(24px) saturate(200%);
@@ -121,6 +122,7 @@ aside.sidebar {
   align-items: center;
   gap: 14px;
   border-bottom: 1px solid var(--border-glass-rim);
+  flex-shrink: 0;
 }
 
 .brand-icon {
@@ -163,12 +165,14 @@ aside.sidebar {
   font-weight: 800;
   color: var(--text-dark);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
 }
 
 .brand span {
   font-size: 12px;
   color: var(--text-muted);
   display: block;
+  white-space: nowrap;
 }
 
 nav.nav-menu {
@@ -259,19 +263,47 @@ nav.nav-menu {
 }
 
 .sidebar-footer {
-  padding: 18px 20px;
+  padding: 16px 20px;
   border-top: 1px solid var(--border-glass-rim);
   font-size: 12px;
   color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.sidebar-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
+  transition: all 0.15s ease;
+}
+
+.sidebar-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+  transform: translateX(2px);
 }
 
 /* ================= Main Content & Header ================= */
-.main-content {
-  flex-grow: 1;
+.main-content,
+.content-area {
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow-y: auto;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 header.top-header {
@@ -283,6 +315,7 @@ header.top-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 20px;
   position: sticky;
   top: 0;
   z-index: 90;
@@ -292,16 +325,74 @@ header.top-header {
     inset 0 -1px 1px rgba(121, 188, 249, 0.2);
 }
 
+.header-title {
+  min-width: 0;
+}
+
 .header-title h2 {
   font-size: 20px;
   font-weight: 800;
   color: var(--text-dark);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
 }
 
 .header-title p {
   font-size: 13px;
   color: var(--text-muted);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* Status Badge (Online/Offline) */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 2px 6px rgba(10, 66, 189, 0.08);
+  white-space: nowrap;
+}
+
+.status-badge.online {
+  background: linear-gradient(180deg, rgba(237, 248, 225, 0.9) 0%, rgba(220, 243, 196, 0.8) 100%);
+  color: var(--bliss);
+  border-color: rgba(103, 182, 3, 0.45);
+}
+
+.status-badge.offline {
+  background: linear-gradient(180deg, rgba(254, 226, 226, 0.9) 0%, rgba(254, 202, 202, 0.8) 100%);
+  color: var(--danger);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-badge.online .status-dot {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(103, 182, 3, 0.8);
+}
+
+.status-badge.offline .status-dot {
+  background: var(--danger);
+  box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
 }
 
 /* Auth Bar in Admin Header */
@@ -385,11 +476,13 @@ header.top-header {
   color: var(--text-dark);
 }
 
-.content-body {
-  padding: 30px;
+.content-body,
+.page-container {
+  padding: 26px 32px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 26px;
+  width: 100%;
 }
 
 .section {
@@ -416,10 +509,13 @@ header.top-header {
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-lg);
   box-shadow: var(--aero-shadow);
-  padding: 24px;
+  padding: 22px 24px;
   position: relative;
   overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stat-card::before {
@@ -442,6 +538,7 @@ header.top-header {
   box-shadow: var(--aero-shadow-lg);
 }
 
+.stat-card .label,
 .stat-label {
   font-size: 13px;
   font-weight: 700;
@@ -450,13 +547,15 @@ header.top-header {
   letter-spacing: 0.5px;
 }
 
+.stat-card .value,
 .stat-value {
-  font-size: 36px;
+  font-size: 38px;
   font-weight: 900;
   color: var(--text-dark);
-  margin: 6px 0;
+  margin: 6px 0 0 0;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  line-height: 1.1;
 }
 
 .stat-desc {
@@ -949,4 +1048,41 @@ dialog::backdrop {
 @keyframes slideIn {
   from { transform: translateX(110%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
+}
+
+/* ================= Layout Grids & Modal Utilities ================= */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+}
+
+.btn-close-modal {
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.quick-login-section {
+  background: rgba(240, 248, 255, 0.65);
+  border: 1px solid var(--border-glass-rim);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.demo-accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.demo-login-btn {
+  justify-content: flex-start;
+  font-size: 12px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

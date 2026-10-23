@@ -1059,3 +1059,53 @@ dialog::backdrop {
   from { transform: translateX(110%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+/* ================= Form & Layout Utilities ================= */
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 24px;
+}
+
+.btn-close-modal {
+  padding: 4px 10px;
+  font-size: 13px;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.quick-login-section {
+  background: rgba(240, 248, 255, 0.65);
+  border: 1px solid var(--border-glass-rim);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.demo-accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.demo-login-btn {
+  justify-content: flex-start;
+  font-size: 12px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

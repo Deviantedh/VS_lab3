@@ -35,6 +35,27 @@ public class ShiftController {
 
     private final ShiftService shiftService;
     private final ReactiveScheduleBridgeService bridgeService;
+    private final portal.schedule.client.EmployeeClient employeeClient;
+    private final portal.schedule.client.BranchClient branchClient;
+    private final portal.schedule.client.AttendanceClient attendanceClient;
+
+    @GetMapping("/circuit-breaker/employee/{id}")
+    @Operation(summary = "Проверка Circuit Breaker: запрос профиля из employee-service")
+    public ResponseEntity<portal.dto.EmployeeDto.Response> checkEmployeeCircuitBreaker(@PathVariable Long id) {
+        return ResponseEntity.ok(employeeClient.getEmployeeById(id));
+    }
+
+    @GetMapping("/circuit-breaker/branch/{id}")
+    @Operation(summary = "Проверка Circuit Breaker: запрос филиала из employee-service")
+    public ResponseEntity<portal.dto.BranchDto.Response> checkBranchCircuitBreaker(@PathVariable Long id) {
+        return ResponseEntity.ok(branchClient.getBranchById(id));
+    }
+
+    @GetMapping("/circuit-breaker/attendance/{id}")
+    @Operation(summary = "Проверка Circuit Breaker: запрос явки из attendance-service")
+    public ResponseEntity<portal.dto.AttendanceRecordDto.Response> checkAttendanceCircuitBreaker(@PathVariable Long id) {
+        return ResponseEntity.ok(attendanceClient.getAttendanceById(id));
+    }
 
     /**
      * ТРЕБОВАНИЕ ТЗ:
