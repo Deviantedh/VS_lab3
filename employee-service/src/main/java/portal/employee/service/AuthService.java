@@ -37,7 +37,7 @@ public class AuthService {
         }
 
         if (user.getPasswordHash() == null) {
-            String defaultExpected = "admin".equalsIgnoreCase(login) ? "admin123" : "password123";
+            String defaultExpected = "1234";
             if (!defaultExpected.equals(request.getPassword())) {
                 throw new BadCredentialsException("Неверный логин или пароль");
             }

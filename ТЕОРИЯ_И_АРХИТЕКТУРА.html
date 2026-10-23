@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Архитектура и теория проекта (ЛР2 и ЛР3)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-dim: #0284c7;
+      --accent: #a855f7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --code-bg: #090d16;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--card-border);
+      padding-bottom: 15px;
+    }
+    h2 {
+      font-size: 1.7rem;
+      color: #38bdf8;
+      margin: 40px 0 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h3 {
+      font-size: 1.25rem;
+      color: #e2e8f0;
+      margin: 25px 0 10px;
+    }
+    p, ul, ol {
+      margin-bottom: 15px;
+      color: #cbd5e1;
+    }
+    ul, ol { padding-left: 25px; }
+    li { margin-bottom: 6px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 18px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+    code {
+      font-family: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #38bdf8;
+      font-size: 0.9em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--card-border);
+    }
+    th {
+      background: #0f172a;
+      color: var(--primary);
+      font-weight: 600;
+    }
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-primary { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .badge-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .qa-box {
+      background: #1e293b;
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      border-radius: 0 8px 8px 0;
+    }
+    .qa-q {
+      font-weight: 600;
+      color: #f1f5f9;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+    .qa-a {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>🎓 Полное руководство по архитектуре и теории проекта</h1>
+  <p style="font-size: 1.1rem; color: #94a3b8;">Лабораторные работы №2 и №3 • Система управления сотрудниками и расписанием</p>
+
+  <div class="card" style="margin-top: 30px;">
+    <h2>1. Зачем микросервисы вместо монолита?</h2>
+    <p>В первой лабораторной работе система была <strong>монолитом</strong>: одно Spring Boot приложение, единый процесс JVM, одна общая база данных.</p>
+    <ul>
+      <li><strong>Проблема монолита:</strong> если падал модуль учета смен, падала вся система. Нельзя было масштабировать модуль явок отдельно от тяжелого модуля кадров.</li>
+      <li><strong>Решение в ЛР2:</strong> разбили на автономные микросервисы. Если падает <code>employee-service</code>, сервис расписаний <code>schedule-service</code> продолжает работать за счет Fallback-заглушки (Circuit Breaker)!</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>2. Архитектурная схема взаимодействия</h2>
+    <p>Все внешние вызовы идут через единый шлюз (API Gateway на порту 8080):</p>
+    <pre>
+               ┌─────────────────────────────────────────────────────────┐
+               │         КЛИЕНТ (Браузер / Swagger / cURL / Postman)     │
+               └────────────────────────────┬────────────────────────────┘
+                                            │ Все HTTP-запросы (:8080)
+                                            ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               ИНФРАСТРУКТУРНЫЙ СЛОЙ                                    │
+│                                                                                        │
+│   ┌────────────────────────────────────────────────────────────────────────────────┐   │
+│   │                         API GATEWAY (порт 8080)                                │   │
+│   │        Единая точка входа, маршрутизация, CORS, балансировка нагрузки          │   │
+│   └───────────────┬───────────────────────────────┬────────────────────────────────┘   │
+│                   │                               │                                    │
+│       Поиск адресов сервисов             Загрузка конфигураций                         │
+│                   ▼                               ▼                                    │
+│   ┌───────────────────────────────┐   ┌───────────────────────────────┐                │
+│   │   EUREKA DISCOVERY (:8761)    │   │     CONFIG SERVER (:8888)     │                │
+│   │    Реестр живых инстансов     │   │      Центральные конфиги      │                │
+│   └───────────────────────────────┘   └───────────────────────────────┘                │
+└───────────────────┬───────────────────────────────┬────────────────────────────────────┘
+                    │                               │
+       Маршрутизация /api/employees/**     Маршрутизация /api/attendance/**
+                    │                               │
+                    ▼                               ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                               СЛОЙ БИЗНЕС-МИКРОСЕРВИСОВ                                │
+│                                                                                        │
+│   ┌────────────────────────┐      OpenFeign      ┌─────────────────────────────────┐   │
+│   │    EMPLOYEE-SERVICE    │ ◄────────────────── │        SCHEDULE-SERVICE         │   │
+│   │      (порт 8081)       │  + Circuit Breaker  │           (порт 8083)           │   │
+│   │  Сотрудники, филиалы,  │                     │     Графики, смены, заявки      │   │
+│   │  должности, роли       │                     │     Spring MVC + JPA / Feign    │   │
+│   │  Spring MVC + JPA      │                     └────────────────┬────────────────┘   │
+│   └───────────┬────────────┘                                      │                    │
+│               │                                          OpenFeign│                    │
+│               │                                  + Circuit Breaker│                    │
+│               │                                                   ▼                    │
+│               │                              ┌─────────────────────────────────────┐   │
+│               │                              │      ATTENDANCE-SERVICE (:8082)     │   │
+│               │                              │        Учет посещаемости            │   │
+│               │                              │        Spring WebFlux + R2DBC       │   │
+│               │                              │     (Реактивный стриминг Flux)      │   │
+│               │                              └────────────────────┬────────────────┘   │
+└───────────────┼───────────────────────────────────────────────────┼────────────────────┘
+                │                                                   │
+                │ JDBC / JPA (Блокирующий)            R2DBC (Реактивный)
+                ▼                                                   ▼
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                           БАЗА ДАННЫХ: PostgreSQL 16 (:5432)                           │
+│                          База: portal_db | Пользователь: portal_user                   │
+└────────────────────────────────────────────────────────────────────────────────────────┘</pre>
+  </div>
+
+  <div class="card">
+    <h2>3. Карта микросервисов (Кто за что отвечает)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Модуль</th>
+          <th>Порт</th>
+          <th>Стек</th>
+          <th>Назначение</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>gateway-service</strong></td>
+          <td>8080</td>
+          <td>Spring Cloud Gateway (Netty)</td>
+          <td>Единая точка входа, проксирование, CORS, агрегация Swagger.</td>
+        </tr>
+        <tr>
+          <td><strong>discovery-service</strong></td>
+          <td>8761</td>
+          <td>Netflix Eureka</td>
+          <td>Реестр сервисов: отслеживает адреса и здоровье инстансов по heartbeats.</td>
+        </tr>
+        <tr>
+          <td><strong>config-service</strong></td>
+          <td>8888</td>
+          <td>Spring Cloud Config</td>
+          <td>Централизованная раздача YAML-конфигов из <code>config-repo</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>employee-service</strong></td>
+          <td>8081</td>
+          <td>Spring MVC + JPA</td>
+          <td>Управление компаниями, филиалами, должностями, сотрудниками, учетками.</td>
+        </tr>
+        <tr>
+          <td><strong>attendance-service</strong></td>
+          <td>8082</td>
+          <td>Spring WebFlux + R2DBC</td>
+          <td>Реактивный учет явок, потоковый стриминг <code>Flux</code> (SSE / NDJSON).</td>
+        </tr>
+        <tr>
+          <td><strong>schedule-service</strong></td>
+          <td>8083</td>
+          <td>Spring MVC + JPA + Feign</td>
+          <td>Графики, смены, назначения, заявки на отпуск/отгулы.</td>
+        </tr>
+        <tr>
+          <td><strong>common-dto</strong></td>
+          <td>-</td>
+          <td>Java Library</td>
+          <td>Общие DTO-классы, перечисления (Enums) и класс среза <code>SliceResponse</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>4. Реактивный стек vs Классический (WebFlux vs MVC)</h2>
+    <pre>
+1. КЛАССИЧЕСКИЙ БЛОКИРУЮЩИЙ СТЕК (Employee & Schedule Services - Spring MVC + JPA):
+   
+   Клиент ──► [HTTP Запрос] ──► Поток #1 (Thread)
+                                       │
+                                       ▼  Блокирующий вызов JDBC
+                                 [Поток ждет ответ БД и спит]
+                                       │
+   Клиент ◄── [HTTP Ответ]  ◄──────────┘
+
+   * Модель: Thread-per-request (1 поток ОС на 1 запрос).
+   * Минус: При медленной БД тысячи потоков просто спят, забивая память.
+
+
+2. РЕАКТИВНЫЙ НЕБЛОКИРУЮЩИЙ СТЕК (Attendance Service - Spring WebFlux + R2DBC):
+
+   Клиент 1 ──► [Запрос 1] ─┐
+   Клиент 2 ──► [Запрос 2] ─┼──► [Event Loop: всего 2-4 потока на весь CPU]
+   Клиент 3 ──► [Запрос 3] ─┘               │
+                                            ▼  Неблокирующий вызов R2DBC
+                                  [Поток НЕ ждет, а сразу берет след. задачу]
+                                            │
+                                            ▼  БД прислала данные (Callback)
+   Клиент   ◄── [Stream / Chunked] ◄────────┘
+
+   * Модель: Event Loop (событийно-ориентированная, как в Node.js / Nginx).
+   * Плюс: Огромная пропускная способность при мизерном потреблении памяти.</pre>
+
+    <h3>Разница между Mono и Flux:</h3>
+    <ul>
+      <li><code>Mono&lt;T&gt;</code> — вернет <strong>0 или 1 элемент</strong> (асинхронный аналог <code>Optional&lt;T&gt;</code>). Пример: <code>getById(id)</code>.</li>
+      <li><code>Flux&lt;T&gt;</code> — вернет <strong>поток от 0 до N элементов</strong> (асинхронный стрим). Пример: <code>/api/attendance/stream</code>.</li>
+    </ul>
+
+    <h3>Зачем SliceResponse вместо Page:</h3>
+    <p><code>Page</code> делает тяжелый запрос <code>SELECT COUNT(*)</code>, который тормозит на миллионах записей. <code>SliceResponse</code> запрашивает <code>LIMIT 21</code> вместо 20. Если вернулась 21 запись — значит есть следующая страница (<code>hasNext = true</code>), и <code>COUNT(*)</code> не вызывается вообще!</p>
+  </div>
+
+  <div class="card">
+    <h2>5. Межсервисные вызовы и Circuit Breaker (Предохранитель)</h2>
+    <p>Когда <code>schedule-service</code> проверяет сотрудника, он вызывает <code>EmployeeClient</code> (OpenFeign). Если <code>employee-service</code> упал, срабатывает Circuit Breaker:</p>
+    <pre>
+               Штатный режим: запросы идут в удаленный сервис
+          ┌────────────────────────────────────────────────────────┐
+          │                                                        │
+          │                   ┌────────────────┐                   │
+          └─────────────────► │     CLOSED     │                   │
+                              │  (Нормально)   │                   │
+                              └───────┬────────┘                   │
+                                      │                            │
+                                      │ Превышен порог сбоев       │ Тестовые запросы
+                                      │ (> 50% ошибок или таймаут) │ успешны
+                                      ▼                            │
+                              ┌────────────────┐                   │
+                              │      OPEN      │                   │
+                              │ (Авария / Цепь │                   │
+                              │   разомкнута)  │                   │
+                              └───────┬────────┘                   │
+                                      │                            │
+                                      │ Прошло время ожидания      │
+                                      │ (wait-duration = 10s)      │
+                                      ▼                            │
+                              ┌────────────────┐                   │
+                              │   HALF-OPEN    │ ──────────────────┘
+                              │ (Пробные 3 вызова)
+                              └───────┬────────┘
+                                      │
+                                      │ Хоть один пробный упал
+                                      └──────────────────────────► (снова в OPEN)</pre>
+    <p><strong>Зачем нужен Fallback?</strong> Чтобы сервис расписаний не вернул пользователю ошибку 500, а отдал понятный резервный ответ: <em>"Employee Service временно недоступен"</em>.</p>
+  </div>
+
+  <div class="card">
+    <h2>6. Топ-10 каверзных вопросов на защите</h2>
+    
+    <div class="qa-box">
+      <div class="qa-q">1. Зачем нам Eureka, если есть Docker Compose (где сервисы доступны по имени)?</div>
+      <div class="qa-a">Docker DNS статичен. Eureka — это динамический реестр уровня приложения: она отслеживает реальное здоровье JVM через heartbeats и поддерживает динамическое масштабирование (например, 3 реплики сервиса сотрудников).</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">2. Почему attendance-service реактивный, а остальные сервисы нет?</div>
+      <div class="qa-a">Отметки явок генерируют непрерывный высоконагруженный поток событий (например, с турникетов). Реактивный стек на Netty и R2DBC позволяет обрабатывать десятки тысяч запросов в секунду на 2-4 потоках процессора без блокировок.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">3. Чем Mono отличается от Flux?</div>
+      <div class="qa-a">Оба — реактивные потоки Project Reactor: <code>Mono</code> возвращает 0 или 1 элемент, а <code>Flux</code> возвращает последовательность от 0 до бесконечного числа элементов.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">4. Почему мы убрали @Repository из интерфейсов репозиториев?</div>
+      <div class="qa-a">Spring Data автоматически находит все интерфейсы, наследующие <code>JpaRepository</code> или <code>R2dbcRepository</code>, и регистрирует их бины. Аннотация <code>@Repository</code> на них избыточна.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">5. Что делает Circuit Breaker в состоянии OPEN?</div>
+      <div class="qa-a">В состоянии OPEN реальный сетевой запрос в упавший сервис даже не отправляется. Срабатывает быстрый отказ (Fail-Fast), и клиент мгновенно получает ответ из Fallback-метода.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">6. Зачем нужен SliceResponse вместо Page?</div>
+      <div class="qa-a">Чтобы избежать медленного запроса <code>COUNT(*)</code> к базе данных. Запрашивается <code>LIMIT size + 1</code>, что идеально для бесконечной ленты.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">7. Что делает аннотация @Transactional?</div>
+      <div class="qa-a">Обеспечивает атомарность: группа операций с БД либо фиксируется целиком (COMMIT), либо откатывается (ROLLBACK) при возникновении <code>RuntimeException</code>.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">8. Как API Gateway понимает, куда перенаправить запрос?</div>
+      <div class="qa-a">По маршрутам (routes) и предикатам. Запрос с префиксом <code>/api/employees/**</code> перенаправляется на <code>lb://employee-service</code> с балансировкой нагрузки через Eureka.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">9. Что делает BCrypt (в ЛР3)?</div>
+      <div class="qa-a">Одностороннее хэширование паролей с добавлением случайной соли (salt). Даже если база утечет, пароли в открытом виде восстановить невозможно.</div>
+    </div>
+
+    <div class="qa-box">
+      <div class="qa-q">10. Как работает JWT-авторизация (в ЛР3)?</div>
+      <div class="qa-a">Клиент передает токен в заголовке <code>Authorization: Bearer &lt;token&gt;</code>. Фильтр <code>JwtAuthenticationFilter</code> проверяет криптографическую подпись и извлекает роли без дополнительных запросов в БД.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

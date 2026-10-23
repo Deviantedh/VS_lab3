@@ -2099,7 +2099,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!auth.isAuthenticated()) {
     // Автоматический вход под barista_dmitry при первом открытии кабинета сотрудника
     try {
-      await auth.login("barista_dmitry", "password123");
+      await auth.login("barista_dmitry", "1234");
     } catch (e) {
       openAuthModal();
     }

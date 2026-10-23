@@ -82,7 +82,7 @@ public class UserService {
 
         String rawPassword = (request.getPassword() != null && !request.getPassword().isBlank())
                 ? request.getPassword().trim()
-                : "password123";
+                : "1234";
 
         User user = User.builder()
                 .login(login)

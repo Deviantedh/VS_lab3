@@ -127,10 +127,10 @@ class AuthServiceTest {
     @DisplayName("Успешный вход пользователя без хэша пароля с дефолтным паролем")
     void shouldLoginUserWithoutPasswordHash() {
         user.setPasswordHash(null);
-        AuthDto.LoginRequest request = new AuthDto.LoginRequest("admin", "admin123");
+        AuthDto.LoginRequest request = new AuthDto.LoginRequest("admin", "1234");
 
         when(userRepository.findByLogin("admin")).thenReturn(Optional.of(user));
-        when(passwordEncoder.encode("admin123")).thenReturn("$2a$10$newly_hashed");
+        when(passwordEncoder.encode("1234")).thenReturn("$2a$10$newly_hashed");
         when(jwtService.generateToken(1L, "admin", RoleCode.ADMIN, 100L)).thenReturn("mocked.jwt.token");
 
         AuthDto.AuthResponse response = authService.login(request);

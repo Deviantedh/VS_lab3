@@ -85,19 +85,19 @@
             </button>
             <div class="dropdown-menu" id="quick-switch-menu" style="display: none;">
               <div class="dropdown-header">Быстрый вход для защиты (1 клик):</div>
-              <button type="button" class="dropdown-item demo-quick-login" data-login="admin" data-pass="admin123">
+              <button type="button" class="dropdown-item demo-quick-login" data-login="admin" data-pass="1234">
                 <strong>👑 admin</strong> &nbsp;(Супервайзер / ADMIN)
               </button>
-              <button type="button" class="dropdown-item demo-quick-login" data-login="hr_morozova" data-pass="password123">
+              <button type="button" class="dropdown-item demo-quick-login" data-login="hr_morozova" data-pass="1234">
                 <strong>💼 hr_morozova</strong> &nbsp;(Кадровик / HR)
               </button>
-              <button type="button" class="dropdown-item demo-quick-login" data-login="manager_sokolov" data-pass="password123">
+              <button type="button" class="dropdown-item demo-quick-login" data-login="manager_sokolov" data-pass="1234">
                 <strong>📋 manager_sokolov</strong> &nbsp;(Управляющий / MANAGER)
               </button>
-              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_dmitry" data-pass="password123">
+              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_dmitry" data-pass="1234">
                 <strong>☕ barista_dmitry</strong> &nbsp;(Бариста / EMPLOYEE #2)
               </button>
-              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_anastasia" data-pass="password123">
+              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_anastasia" data-pass="1234">
                 <strong>☕ barista_anastasia</strong> &nbsp;(Бариста / EMPLOYEE #3)
               </button>
             </div>
@@ -541,7 +541,7 @@
             </div>
             <div class="form-group">
               <label for="emp-user-password">Пароль (хэшируется BCrypt)</label>
-              <input type="password" id="emp-user-password" class="form-control" placeholder="По умолчанию: password123">
+              <input type="password" id="emp-user-password" class="form-control" placeholder="По умолчанию: 1234">
             </div>
             <div class="form-group">
               <label for="emp-user-role">Роль в системе (0-3)</label>
@@ -583,7 +583,7 @@
         </div>
         <div class="form-group" id="group-user-password">
           <label for="user-password">Пароль (хэшируется BCrypt при сохранении) *</label>
-          <input type="password" id="user-password" class="form-control" placeholder="Например: password123 (мин. 6 символов)">
+          <input type="password" id="user-password" class="form-control" placeholder="Например: 1234 (мин. 4 символа)">
           <small style="color: var(--text-muted); font-size: 12px; margin-top: 4px; display: block;">
             🔒 Хэш пароля никогда не возвращается в ответах API.
           </small>
@@ -795,16 +795,16 @@
           Быстрый вход для защиты (1 клик):
         </label>
         <div class="demo-accounts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="admin" data-pass="admin123">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="admin" data-pass="1234">
             👑 <strong>admin</strong> <small>(Супервайзер)</small>
           </button>
-          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="hr_morozova" data-pass="password123">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="hr_morozova" data-pass="1234">
             💼 <strong>hr_morozova</strong> <small>(Кадры)</small>
           </button>
-          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="manager_sokolov" data-pass="password123">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="manager_sokolov" data-pass="1234">
             📋 <strong>manager_sokolov</strong> <small>(Управляющий)</small>
           </button>
-          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_dmitry" data-pass="password123">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_dmitry" data-pass="1234">
             ☕ <strong>barista_dmitry</strong> <small>(Бариста #2)</small>
           </button>
         </div>
@@ -822,7 +822,7 @@
         </div>
         <div class="form-group">
           <label for="auth-input-password">Пароль *</label>
-          <input type="password" id="auth-input-password" class="form-control" required placeholder="Например: admin123">
+          <input type="password" id="auth-input-password" class="form-control" required placeholder="Например: 1234">
         </div>
         <div id="auth-error-msg" style="display: none; color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px;"></div>
         <div style="margin-top: 20px;">

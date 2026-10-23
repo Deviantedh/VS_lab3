@@ -642,7 +642,7 @@ function openAddUserModal() {
   }
   const modal = document.getElementById('modal-user');
   const pwdInput = document.getElementById('user-password');
-  if (pwdInput) pwdInput.value = "password123";
+  if (pwdInput) pwdInput.value = "1234";
   document.getElementById('modal-user-title').textContent = 'Создать нового пользователя';
   document.getElementById('user-id').value = '';
   document.getElementById('user-login').value = '';
@@ -1592,7 +1592,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (password) {
       body.password = password;
     } else if (!userId) {
-      body.password = "password123";
+      body.password = "1234";
     }
 
     try {
@@ -1753,7 +1753,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (!auth.isAuthenticated()) {
     // Для максимального удобства при открытии: пробуем автовход под admin
     try {
-      await auth.login("admin", "admin123");
+      await auth.login("admin", "1234");
     } catch (e) {
       openAuthModal();
     }

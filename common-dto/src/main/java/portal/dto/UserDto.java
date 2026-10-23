@@ -30,8 +30,8 @@ public class UserDto {
         @Schema(description = "Логин пользователя", example = "ivanov")
         private String login;
 
-        @Size(min = 6, max = 100, message = "Пароль должен быть от 6 до 100 символов")
-        @Schema(description = "Пароль пользователя (хэшируется при сохранении, никогда не возвращается в ответах)", example = "secret123")
+        @Size(min = 4, max = 100, message = "Пароль должен быть от 4 до 100 символов")
+        @Schema(description = "Пароль пользователя (хэшируется при сохранении, никогда не возвращается в ответах)", example = "1234")
         private String password;
     }
 
