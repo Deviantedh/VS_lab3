@@ -1,26 +1,28 @@
-# REST API Системы управления сотрудниками (Микросервисы)
+# REST API Системы управления сотрудниками (Микросервисы + JWT Безопасность)
 
-> Распределённый бэкенд на **Spring Boot 4.1.1 / Spring Cloud 2025.1.3 / Java 21 LTS**, реализующий микросервисную архитектуру с Service Discovery, Config Server, API Gateway, реактивным стеком (Reactor + R2DBC / Reactor + JPA) и межсервисным взаимодействием (Feign Client + Circuit Breaker).
+> Распределённый бэкенд на **Spring Boot 4.1.1 / Spring Cloud 2025.1.3 / Spring Security 6 / Java 21 LTS**, реализующий микросервисную архитектуру с аутентификацией по стандарту **JWT Bearer**, ролевой моделью (**RBAC**), изоляцией пользовательских данных, хэшированием паролей **BCrypt**, Service Discovery, Config Server, API Gateway и реактивным стеком.
 > 
-> **Лабораторная работа №2** по дисциплине «Высокопроизводительные системы».
+> **Лабораторная работа №3** по дисциплине «Высокопроизводительные системы».
 
 ---
 
-##  Содержание
-1. [Архитектура системы](#-архитектура-системы)
+## 📌 Содержание
+1. [Архитектура системы и безопасность](#-архитектура-системы-и-безопасность)
 2. [Обзор модулей и сервисов](#-обзор-модулей-и-сервисов)
-3. [Реализация требований ТЗ Лабораторной №2](#-реализация-требований-тз-лабораторной-2)
-4. [Интерактивная документация (Swagger UI)](#-интерактивная-документация-swagger-ui)
-5. [Быстрый старт и запуск](#-быстрый-старт-и-запуск)
-6. [Декомпозиция задач и TODO](#-декомпозиция-задач-и-todo)
+3. [Реализация требований ТЗ Лабораторной №3](#-реализация-требований-тз-лабораторной-3)
+4. [Клиентские интерфейсы (Frontend)](#-клиентские-интерфейсы-frontend)
+5. [Интерактивная документация (Swagger UI)](#-интерактивная-документация-swagger-ui)
+6. [Быстрый старт и запуск](#-быстрый-старт-и-запуск)
+7. [Тестирование и покрытие кода](#-тестирование-и-покрытие-кода)
 
 ---
 
-##  Архитектура системы
+## 🏛 Архитектура системы и безопасность
 
 ```
                               [ Клиент / Frontend / Swagger UI ]
                                               │ :8080
+                                              │ (Authorization: Bearer <JWT>)
                                               ▼
                                    ┌──────────────────────┐
                                    │   Gateway Service    │
@@ -32,12 +34,12 @@
                ▼                              ▼                              ▼
     ┌──────────────────────┐       ┌──────────────────────┐       ┌──────────────────────┐
     │   Employee Service   │◄──────┤  Attendance Service  │       │   Schedule Service   │
-    │ (Spring Data JPA)    │ Feign │   (Reactor + R2DBC)  │       │ (Reactor + JPA + CB) │
-    └──────────┬───────────┘  + CB └──────────┬───────────┘       └──────────┬───────────┘
-               │                              │                              │
-               ▼                              ▼                              ▼
-    [ PostgreSQL (JPA) ]           [ PostgreSQL (R2DBC) ]         [ PostgreSQL (JPA) ]
-
+    │ (Spring Security JWT │ Feign │   (Reactor + R2DBC)  │       │ (Reactor + JPA + CB) │
+    │  + JPA + BCrypt)     │  + CB └──────────┬───────────┘       └──────────┬───────────┘
+    └──────────┬───────────┘                  │                              │
+               │                              ▼                              ▼
+               ▼                   [ PostgreSQL (R2DBC) ]         [ PostgreSQL (JPA) ]
+     [ PostgreSQL (JPA) ]
                ▲                              ▲                              ▲
                └──────────────────────────────┼──────────────────────────────┘
                                               │
@@ -52,112 +54,132 @@
 
 ---
 
-##  Обзор модулей и сервисов
+## 📦 Обзор модулей и сервисов
 
 | Модуль | Порт | Стек / Технологии | Назначение |
 | :--- | :---: | :--- | :--- |
-| **`common-dto`** | — | Jackson, Jakarta Validation, Swagger Annotations | Общая библиотека моделей, Request/Response DTO, Enums (`RoleCode`, `EmployeeStatus`, `RequestType` и т.д.) и пагинации `SliceResponse`. |
+| **`common-dto`** | — | Jackson, Jakarta Validation, Swagger Annotations | Библиотека DTO, `AuthDto` (логин/ответ с токеном), `UserDto`, Enums (`RoleCode`, `EmployeeStatus`, `RequestType`) и `SliceResponse`. |
 | **`discovery-service`** | `8761` | Netflix Eureka Server, Spring Boot Actuator | Service Discovery: единый реестр адресов и инстансов микросервисов. |
-| **`config-service`** | `8888` | Spring Cloud Config Server, Native Profile | Централизованное хранилище конфигурационных файлов (`config-repo/`) для всех сервисов. |
+| **`config-service`** | `8888` | Spring Cloud Config Server, Native Profile | Централизованное хранилище конфигураций (`config-repo/`) для всех сервисов. |
 | **`gateway-service`** | `8080` | Spring Cloud Gateway (MVC), Springdoc OpenAPI | Единая точка входа в систему, маршрутизация запросов к микросервисам по Eureka-именам (`lb://`), проброс CORS и агрегация Swagger UI. |
-| **`employee-service`** | `8081` | Spring Web, Spring Data JPA, PostgreSQL, Flyway | Управление персоналом: компании, филиалы сети, справочник должностей, сотрудники, назначения и учетные записи пользователей. |
-| **`attendance-service`** | `8082` | **Spring WebFlux, Reactor, Spring Data R2DBC, PostgreSQL R2DBC** | Учет фактического рабочего времени: фиксация прихода (`Check-In`) и ухода (`Check-Out`), бесконечная реактивная лента посещений (`Mono`/`Flux`). |
-| **`schedule-service`** | `8083` | **Spring WebFlux, Reactor, Spring Data JPA, OpenFeign, Resilience4j** | Управление расписаниями и сменами: реактивные мосты для тяжелых JPA-запросов (`Schedulers.boundedElastic()`), вызовы `employee-service` через Feign Client с Circuit Breaker и fallback-заглушкой. |
+| **`employee-service`** | `8081` | **Spring Security, JJWT, BCrypt, Spring Data JPA, Flyway** | Ядро безопасности и оргструктуры: аутентификация (`POST /api/auth/login`), профиль (`GET /api/auth/me`), RBAC контроль доступа, хэширование паролей, компании, филиалы, должности, сотрудники и учетные записи. |
+| **`attendance-service`** | `8082` | Spring WebFlux, Reactor, Spring Data R2DBC, PostgreSQL R2DBC | Учет фактического рабочего времени: фиксация явок (`Check-In` / `Check-Out`), реактивная лента посещений. |
+| **`schedule-service`** | `8083` | Spring WebFlux, Reactor, Spring Data JPA, OpenFeign, Resilience4j | Управление расписаниями и сменами: мосты `boundedElastic()`, вызовы `EmployeeClient` с Circuit Breaker. |
 
 ---
 
-##  Реализация требований ТЗ Лабораторной №2
+## 🛡️ Реализация требований ТЗ Лабораторной №3
 
-1. **Регистрация в Eureka:**
-   - Все микросервисы (`employee-service`, `attendance-service`, `schedule-service`, `gateway-service`, `config-service`) подключают `spring-cloud-starter-netflix-eureka-client` и регистрируются в `discovery-service` (`:8761`).
-2. **Конфигурация через Config Server:**
-   - Настроен `config-service` (`:8888`), читающий конфигурации из каталога [`config-repo`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/config-repo). Все сервисы подключают `spring-cloud-starter-config`.
-3. **Единая точка входа через Spring Gateway:**
-   - Сервис `gateway-service` слушает порт `8080` и маршрутизирует:
-     - `/api/companies/**`, `/api/branches/**`, `/api/positions/**`, `/api/employees/**`, `/api/users/**` $\to$ `lb://employee-service`
-     - `/api/attendance/**` $\to$ `lb://attendance-service`
-     - `/api/schedules/**`, `/api/shifts/**`, `/api/absences/**`, `/api/requests/**` $\to$ `lb://schedule-service`
-4. **Межсервисное взаимодействие (Feign Client):**
-   - В `schedule-service` реализован [`EmployeeClient`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/schedule-service/src/main/java/portal/schedule/client/EmployeeClient.java) с аннотацией `@FeignClient(name = "employee-service")` для проверки данных сотрудника при планировании смен.
-5. **Отказоустойчивость (Circuit Breaker):**
-   - Интегрирован `Resilience4j` с fallback-классом [`EmployeeClientFallback`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/schedule-service/src/main/java/portal/schedule/client/EmployeeClientFallback.java). При недоступности сервиса сотрудников запрос не блокирует поток и возвращает резервный ответ.
-6. **Микросервис на Reactor + R2DBC:**
-   - Реализован [`attendance-service`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/attendance-service) с реактивным неблокирующим драйвером PostgreSQL (`r2dbc-postgresql`), реактивными репозиториями `R2dbcRepository` и контроллерами на `Mono`/`Flux`.
-7. **Микросервис на Reactor + Spring Data JPA/JDBC:**
-   - Реализован [`schedule-service`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/schedule-service) с реактивным сервисом [`ReactiveScheduleBridgeService`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/schedule-service/src/main/java/portal/schedule/service/ReactiveScheduleBridgeService.java), где синхронные операции JPA изолированы в специальном пуле потоков:
-     ```java
-     Mono.fromCallable(() -> shiftRepository.findById(id))
-         .subscribeOn(Schedulers.boundedElastic());
-     ```
+1. **Авторизация Spring Security + JWT:**
+   - Подключены `spring-boot-starter-security` и библиотека `jjwt` (0.12.6).
+   - Настроен [`SecurityConfig`](employee-service/src/main/java/portal/employee/security/SecurityConfig.java) со `STATELESS`-сессиями.
+   - Фильтр [`JwtAuthenticationFilter`](employee-service/src/main/java/portal/employee/security/JwtAuthenticationFilter.java) перехватывает хедер `Authorization: Bearer <token>`, валидирует подпись HMAC-SHA256 через [`JwtService`](employee-service/src/main/java/portal/employee/security/JwtService.java) и устанавливает контекст аутентификации [`UserPrincipal`](employee-service/src/main/java/portal/employee/security/UserPrincipal.java).
+   - Эндпоинт получения токена: `POST /api/auth/login` в [`AuthController`](employee-service/src/main/java/portal/employee/controller/AuthController.java).
+
+2. **Ролевая модель (RBAC):**
+   - 4 системные роли:
+     * `ADMIN (0)` — супервайзер / системный администратор;
+     * `HR (1)` — специалист по персоналу;
+     * `MANAGER (2)` — управляющий филиалом;
+     * `EMPLOYEE (3)` — линейный персонал.
+   - Разграничение прав на уровне `SecurityFilterChain` и аннотаций `@PreAuthorize`:
+     * Управление справочниками: `ADMIN`, `HR`, `MANAGER`;
+     * Прием, увольнение и редактирование сотрудников: только `ADMIN` и `HR`;
+     * Назначение на смены и филиалы: `ADMIN`, `HR`, `MANAGER`;
+     * Создание учетных записей: **только супервайзер (`ADMIN`)**.
+
+3. **Логика методов зависит от текущего пользователя (Изоляция данных):**
+   - **`GET /api/users`**: `ADMIN` и `HR` видят всех пользователей; `EMPLOYEE` видит **только свой профиль**.
+   - **`GET /api/users/{id}`** и **`GET /api/users/by-login/{login}`**: сотрудник получает `403 Forbidden` при попытке открыть чужой аккаунт.
+   - **`GET /api/employees/{id}`** и **`GET /api/employees/{id}/assignments`**: линейный сотрудник (`EMPLOYEE`) видит исключительно свои данные и свои смены. Доступ к чужим записям пресекается с кодом `403 Forbidden`.
+
+4. **Защита паролей (сокрытие из ответов):**
+   - В `UserDto.Request` поле `password` помечено `@JsonProperty(access = Access.WRITE_ONLY)`.
+   - В `UserDto.Response` полей пароля нет вовсе — пароли не утекают в HTTP-ответах.
+
+5. **Все пароли хранятся в хэшированном виде:**
+   - Используется `BCryptPasswordEncoder`.
+   - В `UserService` пароли хэшируются при создании и обновлении: `passwordEncoder.encode(...)`.
+   - В миграции Flyway `V3__set_default_passwords.sql` и `seed_data.sql` дефолтные пароли сохранены в виде BCrypt-хэшей.
+
+6. **Создание пользователей разрешено только супервайзерам:**
+   - В `SecurityConfig`: `.requestMatchers(HttpMethod.POST, "/api/users").hasRole("ADMIN")`.
+   - В `UserController`: `@PostMapping @PreAuthorize("hasRole('ADMIN')")`.
 
 ---
 
-##  Интерактивная документация (Swagger UI)
+## 💻 Клиентские интерфейсы (Frontend)
 
-Благодаря агрегации в Gateway, вся документация API доступна в одном окне:
+Для удобной демонстрации и тестирования всех сценариев реализованы два веб-интерфейса на чистом JavaScript/HTML5:
+
+* **Панель управления (Admin / HR / Manager):** [http://localhost:3000](http://localhost:3000)
+* **Кабинет сотрудника (Employee Self-Service):** [http://localhost:3001](http://localhost:3001)
+
+### Демонстрационные аккаунты (1-клик вход):
+| Логин | Пароль | Роль | Описание для защиты |
+| :--- | :---: | :---: | :--- |
+| **`admin`** | `admin123` | `ADMIN` (Супервайзер) | Полный доступ, создание и удаление учетных записей пользователей |
+| **`hr_morozova`** | `password123` | `HR` (Кадры) | Управление сотрудниками, согласование отпусков |
+| **`manager_sokolov`** | `password123` | `MANAGER` (Управляющий) | Планирование расписаний, смен и табель явок |
+| **`barista_dmitry`** | `password123` | `EMPLOYEE` | Линейный бариста (ID #2): просмотр личных смен, отметка явок |
+| **`barista_anastasia`** | `password123` | `EMPLOYEE` | Линейный бариста (ID #3): отпуска, подача заявок |
+
+В обоих интерфейсах встроены:
+* **Инспектор JWT токена:** позволяет скопировать Bearer-токен и просмотреть расшифрованные клеймы (`sub`, `role`, `employeeId`, `exp`).
+* **Кнопка проверки изоляции данных:** отправляет запрос к чужому сотруднику ID #1 и наглядно демонстрирует ответ `403 Forbidden` для роли `EMPLOYEE`.
+
+---
+
+## 📖 Интерактивная документация (Swagger UI)
+
 * **Единый Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-* В верхнем правом выпадающем списке доступно переключение между спецификациями:
+* В правом верхнем углу доступна кнопка **Authorize** для ввода Bearer JWT токена.
+* В выпадающем списке доступно переключение между микросервисами:
   * **Employee Service** (`/v3/api-docs/employee-service`)
   * **Attendance Service (R2DBC)** (`/v3/api-docs/attendance-service`)
   * **Schedule Service (WebFlux + JPA)** (`/v3/api-docs/schedule-service`)
 
 ---
 
-##  Быстрый старт и запуск
+## 🚀 Быстрый старт и запуск
 
-### Вариант 1: Сборка и локальная компиляция
+### 1. Поднятие базы данных (для локального запуска из IDE):
 ```bash
-# Собрать все модули проекта
-./mvnw clean compile
+docker compose up -d postgres
 ```
 
-### Вариант 2: Запуск всей системы в Docker Compose
+### 2. Запуск всей системы в Docker Compose:
 ```bash
 docker compose up --build
 ```
-*Поднимутся:* PostgreSQL, Eureka Server (`:8761`), Config Server (`:8888`), Gateway (`:8080`) и 3 бизнес-сервиса (`:8081`, `:8082`, `:8083`).
+
+### 3. Запуск фронтенд-интерфейсов:
+```bash
+node frontend/server.js
+```
+Интерфейсы откроются на `http://localhost:3000` и `http://localhost:3001`.
+
+### 4. Остановка системы:
+```bash
+docker compose down
+```
 
 ---
 
-## 📋Декомпозиция задач и TODO
+## 🧪 Тестирование и покрытие кода
 
-Система подготовлена для командной работы и разделена по зонам ответственности:
+Все тесты запускаются через Maven Wrapper:
 
-###  Сделано (Архитектура и сервисы):
-- [x] Декомпозиция монолита на модули Maven multi-module.
-- [x] Выделение общего модуля контрактов `common-dto`.
-- [x] Реализация Service Discovery (`discovery-service` на Netflix Eureka).
-- [x] Реализация Centralized Configuration (`config-service` + `config-repo`).
-- [x] Настройка API Gateway (`gateway-service`) с CORS и роутингом `lb://`.
-- [x] Выделение сервиса `employee-service` (Spring Data JPA + Flyway).
-- [x] Реализация сервиса `attendance-service` на **Reactor + R2DBC**.
-- [x] Реализация сервиса `schedule-service` на **Reactor + JPA + Feign Client + Circuit Breaker**.
-- [x] Агрегация Swagger UI на Gateway по всем микросервисам.
-- [x] Мультистейдж `Dockerfile` и оркестрация в `compose.yaml`.
+```bash
+# Быстрый прогон тестов во всех микросервисах
+./mvnw test
 
----
+# Запуск тестов со сбором JaCoCo покрытия
+./run-tests-with-coverage.sh
+```
 
-### 📋 TODO для Лёши (Тестирование):
-- [x] **Тесты для `common-dto`:**
-  - [x] Сериализация / десериализация DTO через Jackson (проверка кастомных дат и Enums).
-- [x] **Тесты для `employee-service`:**
-  - [x] Модульные тесты сервисов (`EmployeeServiceTest`, `BranchServiceTest`).
-  - [x] Интеграционные тесты с Testcontainers PostgreSQL (`@SpringBootTest`).
-- [x] **Тесты для реактивного `attendance-service`:**
-  - [x] Тестирование реактивных потоков `Mono`/`Flux` с использованием `StepVerifier`.
-  - [x] Интеграционные тесты реактивного репозитория R2DBC.
-- [x] **Тесты для `schedule-service`:**
-  - [x] Тестирование `ReactiveScheduleBridgeService` с моками `EmployeeClient`.
-  - [x] Тестирование сценариев Circuit Breaker: имитация падения `employee-service` и проверка срабатывания `EmployeeClientFallback`.
-  - [x] Тестирование транзакционных операций создания и отклонения отпусков/смен.
+В `employee-service` написан полный сьют тестов безопасности:
+* `SecurityIntegrationTest`: проверка сквозной аутентификации, 401 Unauthorized без токена, 403 Forbidden при нехватке прав, изоляции данных;
+* `JwtServiceTest`, `JwtAuthenticationFilterTest`, `UserPrincipalTest`, `SecurityConfigTest`;
+* `AuthControllerTest`, `AuthServiceTest`, `UserControllerTest`, `EmployeeControllerTest`.
 
----
-
-###  TODO для Насти (Интеграция):
-- [ ] **Сквозное ручное/E2E тестирование через Gateway:**
-  - [ ] Тыкай на ошибки и всё что можно
-  более локальные 
-  - [ ] Выполнить запрос в `schedule-service` и убедиться, что Circuit Breaker корректно отдает fallback-ответ без зависания шлюза.
-  - [ ] Убедиться, что фронтенд из папки [`frontend/`](file:///Users/devianted/Desktop/Учёба/Впст/lab2/frontend) работает
-  - [ ] Описать диаграмму декомпозиции сервисов.
-  - [ ] потыкать Swagger UI и логи Circuit Breaker.

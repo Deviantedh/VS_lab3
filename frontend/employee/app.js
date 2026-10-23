@@ -1,5 +1,142 @@
 const API_URL = 'http://localhost:8080/api';
 
+// ================= JWT Авторизация и Управление Сессией (Лаб 3) =================
+const AUTH_KEY = 'portal_jwt_auth';
+
+const auth = {
+  token: null,
+  user: null, // { token, tokenType, expiresIn, login, role, employeeId, userId }
+
+  init() {
+    const saved = localStorage.getItem(AUTH_KEY);
+    if (saved) {
+      try {
+        this.user = JSON.parse(saved);
+        this.token = this.user.token;
+      } catch (e) {
+        this.clear();
+      }
+    }
+  },
+
+  isAuthenticated() {
+    return !!this.token;
+  },
+
+  save(authData) {
+    this.user = authData;
+    this.token = authData.token;
+    localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
+    updateAuthUI();
+  },
+
+  clear() {
+    this.token = null;
+    this.user = null;
+    localStorage.removeItem(AUTH_KEY);
+    updateAuthUI();
+  },
+
+  async login(login, password) {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password })
+    });
+    if (!res.ok) {
+      let msg = 'Неверный логин или пароль';
+      try {
+        const body = await res.json();
+        msg = body.message || body.detail || msg;
+      } catch (e) {}
+      throw new Error(msg);
+    }
+    const data = await res.json();
+    this.save(data);
+    return data;
+  },
+
+  getRole() {
+    return this.user ? this.user.role : null;
+  },
+
+  getLogin() {
+    return this.user ? this.user.login : 'Гость';
+  },
+
+  getEmployeeId() {
+    return this.user ? this.user.employeeId : null;
+  },
+
+  decodeToken() {
+    if (!this.token) return null;
+    try {
+      const parts = this.token.split('.');
+      if (parts.length !== 3) return null;
+      return JSON.parse(atob(parts[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+};
+
+// ================= Централизованный Auth Fetch (Bearer Token) =================
+async function authFetch(url, options = {}) {
+  const headers = { ...(options.headers || {}) };
+  if (auth.token) {
+    headers['Authorization'] = `Bearer ${auth.token}`;
+  }
+  if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401) {
+    auth.clear();
+    openAuthModal('Сессия истекла или требуется авторизация (401 Unauthorized)');
+    throw new Error('401 Unauthorized: требуется авторизация');
+  }
+
+  return response;
+}
+
+function updateAuthUI() {
+  const usernameEl = document.getElementById('auth-username');
+  const roleBadgeEl = document.getElementById('auth-role-badge');
+  const avatarEl = document.getElementById('auth-avatar');
+
+  if (!auth.isAuthenticated()) {
+    if (usernameEl) usernameEl.textContent = 'Не авторизован';
+    if (roleBadgeEl) {
+      roleBadgeEl.className = 'badge badge-gray';
+      roleBadgeEl.textContent = 'Гость';
+    }
+    updateRoleTabsVisibility(null);
+    return;
+  }
+
+  const role = auth.getRole();
+  const login = auth.getLogin();
+  const empId = auth.getEmployeeId();
+
+  if (usernameEl) usernameEl.textContent = login;
+  if (avatarEl) {
+    avatarEl.textContent = role === 'ADMIN' ? '👑' : (role === 'HR' ? '💼' : (role === 'MANAGER' ? '📋' : '☕'));
+  }
+  if (roleBadgeEl) {
+    roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;
+    let roleTitle = role;
+    if (role === 'ADMIN') roleTitle = '👑 ADMIN (Супервайзер)';
+    else if (role === 'HR') roleTitle = '💼 HR (Кадры)';
+    else if (role === 'MANAGER') roleTitle = '📋 MANAGER (Управляющий)';
+    else if (role === 'EMPLOYEE') roleTitle = `☕ EMPLOYEE (Сотрудник #${empId || '?'})`;
+    roleBadgeEl.textContent = roleTitle;
+  }
+
+  updateRoleTabsVisibility(role);
+}
+
 // Состояние личного кабинета и панели управления
 const state = {
   currentEmployeeId: localStorage.getItem('employee_current_id') || null,
@@ -174,72 +311,58 @@ function initModals() {
 
 // ================= Загрузка списка сотрудников =================
 async function loadEmployeesList() {
-  const select = document.getElementById('current-user-select');
   try {
-    const res = await fetch(`${API_URL}/employees?size=50`).then(handleApiResponse);
+    const res = await authFetch(`${API_URL}/employees?size=50`).then(handleApiResponse);
     const employees = Array.isArray(res) ? res : (res.content || []);
     state.employees = employees;
 
-    select.innerHTML = '';
-    if (employees.length === 0) {
-      select.innerHTML = '<option value="">Нет сотрудников</option>';
-      return;
+    const select = document.getElementById('current-user-select');
+    if (select) {
+      select.innerHTML = "";
+      employees.forEach(emp => {
+        const opt = document.createElement("option");
+        opt.value = emp.id;
+        opt.textContent = `${emp.name} (${emp.status})`;
+        select.appendChild(opt);
+      });
+      if (state.currentEmployeeId && employees.some(e => e.id == state.currentEmployeeId)) {
+        select.value = state.currentEmployeeId;
+      }
     }
 
-    employees.forEach(emp => {
-      const opt = document.createElement('option');
-      opt.value = emp.id;
-      opt.textContent = `${emp.name} (${emp.status})`;
-      select.appendChild(opt);
-    });
-
-    if (state.currentEmployeeId && employees.some(e => e.id == state.currentEmployeeId)) {
-      select.value = state.currentEmployeeId;
-    } else {
-      select.value = employees[0].id;
+    if (!state.currentEmployeeId && auth.getEmployeeId()) {
+      state.currentEmployeeId = auth.getEmployeeId();
+    } else if (!state.currentEmployeeId && employees.length > 0) {
       state.currentEmployeeId = employees[0].id;
-      localStorage.setItem('employee_current_id', employees[0].id);
     }
 
-    await onEmployeeChanged(select.value);
+    if (state.currentEmployeeId) {
+      state.currentEmployee = employees.find(e => e.id == state.currentEmployeeId);
+      localStorage.setItem("employee_current_id", state.currentEmployeeId);
+    }
+
+    await onEmployeeChanged(state.currentEmployeeId);
   } catch (err) {
-    showToast('Не удалось подключиться к серверу API: ' + err.message, 'danger');
+    showToast("Статус API: " + err.message, "info");
   }
 }
 
 async function loadUserAccountForCurrentEmployee() {
   const roleBadge = document.getElementById('current-user-role-badge');
-
-  try {
-    const user = await fetch(`${API_URL}/users/by-employee/${state.currentEmployeeId}`)
-      .then(res => res.ok ? res.json() : null)
-      .catch(() => null);
-
-    state.currentUserAccount = user;
-    if (user) {
-      roleBadge.textContent = `${user.roleCode} (Роль ${user.roleId})`;
-      roleBadge.className = `badge ${getRoleBadgeClass(user.roleCode)}`;
-      updateRoleTabsVisibility(user.roleCode);
-    } else {
-      roleBadge.textContent = 'EMPLOYEE (Роль не привязана)';
-      roleBadge.className = 'badge badge-gray';
-      updateRoleTabsVisibility('EMPLOYEE');
-    }
-  } catch (err) {
-    roleBadge.textContent = 'Роль не определена';
-    roleBadge.className = 'badge badge-gray';
-    updateRoleTabsVisibility('EMPLOYEE');
-  }
+  if (!roleBadge) return;
+  const role = auth.getRole() || 'EMPLOYEE';
+  roleBadge.textContent = `${role}`;
+  roleBadge.className = `badge ${getRoleBadgeClass(role)}`;
+  updateRoleTabsVisibility(role);
 }
 
 async function onEmployeeChanged(employeeId) {
-  state.currentEmployeeId = Number(employeeId);
-  localStorage.setItem('employee_current_id', employeeId);
-  state.currentEmployee = state.employees.find(e => e.id == employeeId);
+  state.currentEmployeeId = employeeId ? Number(employeeId) : (auth.getEmployeeId() || 2);
+  localStorage.setItem('employee_current_id', state.currentEmployeeId);
+  state.currentEmployee = state.employees.find(e => e.id == state.currentEmployeeId);
 
   await loadUserAccountForCurrentEmployee();
 
-  // Загружаем активную вкладку
   const activeTab = document.querySelector('.tab-btn.active');
   const target = activeTab ? activeTab.dataset.tab : 'shifts';
 
@@ -255,7 +378,6 @@ async function onEmployeeChanged(employeeId) {
   if (target === 'hr-users') loadHrUsers();
   if (target === 'hr-org') loadHrOrg();
 }
-
 // ================= 1. ЛИЧНЫЕ СМЕНЫ СОТРУДНИКА =================
 async function loadMyShifts() {
   const container = document.getElementById('my-shifts-container');
@@ -264,15 +386,15 @@ async function loadMyShifts() {
   container.innerHTML = '<p style="color: var(--text-muted); text-align: center; grid-column: 1 / -1;">Загрузка расписания...</p>';
 
   try {
-    const companies = await fetch(`${API_URL}/companies`).then(handleApiResponse);
+    const companies = await authFetch(`${API_URL}/companies`).then(handleApiResponse);
     const myShifts = [];
 
     for (const c of companies) {
-      const branches = await fetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
+      const branches = await authFetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
       for (const b of branches) {
-        const schedules = await fetch(`${API_URL}/schedules/branch/${b.id}`).then(handleApiResponse);
+        const schedules = await authFetch(`${API_URL}/schedules/branch/${b.id}`).then(handleApiResponse);
         for (const s of schedules) {
-          const shifts = await fetch(`${API_URL}/shifts/schedule/${s.id}?page=0&size=50`).then(handleApiResponse);
+          const shifts = await authFetch(`${API_URL}/shifts/schedule/${s.id}?page=0&size=50`).then(handleApiResponse);
           for (const shift of shifts) {
             if (shift.assignedEmployees && shift.assignedEmployees.some(e => e.id === state.currentEmployeeId)) {
               myShifts.push({ ...shift, branchName: b.name });
@@ -347,7 +469,7 @@ async function loadMyAttendance() {
   // 2. Проверяем утверждённые отсутствия на сегодня
   let activeAbsence = null;
   try {
-    const absences = await fetch(`${API_URL}/absences/employee/${state.currentEmployeeId}`).then(handleApiResponse);
+    const absences = await authFetch(`${API_URL}/absences/employee/${state.currentEmployeeId}`).then(handleApiResponse);
     activeAbsence = (absences || []).find(a => todayStr >= a.dateFrom && todayStr <= a.dateTo);
   } catch (e) {}
 
@@ -390,7 +512,7 @@ async function loadMyAttendance() {
 
   // 4. Загружаем историю явок и проверяем открытую смену
   try {
-    const res = await fetch(`${API_URL}/attendance/employee/${state.currentEmployeeId}`).then(handleApiResponse);
+    const res = await authFetch(`${API_URL}/attendance/employee/${state.currentEmployeeId}`).then(handleApiResponse);
     const records = Array.isArray(res) ? res : (res.content || []);
     tbody.innerHTML = '';
 
@@ -454,7 +576,7 @@ document.getElementById('btn-clock-in').addEventListener('click', async () => {
     : 'Внеплановый выход через Личный кабинет';
 
   try {
-    await fetch(`${API_URL}/attendance/check-in`, {
+    await authFetch(`${API_URL}/attendance/check-in`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -481,7 +603,7 @@ document.getElementById('btn-clock-out').addEventListener('click', async () => {
   const comment = prompt('Комментарий к смене (необязательно):', 'Смена завершена без происшествий');
 
   try {
-    await fetch(`${API_URL}/attendance/${state.activeAttendanceRecord.id}/check-out`, {
+    await authFetch(`${API_URL}/attendance/${state.activeAttendanceRecord.id}/check-out`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -503,7 +625,7 @@ async function loadMyRequests() {
   if (!state.currentEmployeeId) return;
 
   try {
-    const res = await fetch(`${API_URL}/requests/employee/${state.currentEmployeeId}`).then(handleApiResponse);
+    const res = await authFetch(`${API_URL}/requests/employee/${state.currentEmployeeId}`).then(handleApiResponse);
     const requests = Array.isArray(res) ? res : (res.content || []);
     tbody.innerHTML = '';
 
@@ -559,7 +681,7 @@ document.getElementById('form-submit-request').addEventListener('submit', async 
   const requestData = JSON.stringify({ dateFrom, dateTo, comment });
 
   try {
-    await fetch(`${API_URL}/requests`, {
+    await authFetch(`${API_URL}/requests`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -583,7 +705,7 @@ async function loadMyAbsences() {
   if (!state.currentEmployeeId) return;
 
   try {
-    const absences = await fetch(`${API_URL}/absences/employee/${state.currentEmployeeId}`).then(handleApiResponse);
+    const absences = await authFetch(`${API_URL}/absences/employee/${state.currentEmployeeId}`).then(handleApiResponse);
     tbody.innerHTML = '';
 
     if (!absences || absences.length === 0) {
@@ -618,7 +740,7 @@ async function renderProfile() {
 
   let assignments = [];
   try {
-    assignments = await fetch(`${API_URL}/employees/${emp.id}/assignments`).then(handleApiResponse);
+    assignments = await authFetch(`${API_URL}/employees/${emp.id}/assignments`).then(handleApiResponse);
   } catch (e) {}
 
   const assignmentsHtml = (assignments && assignments.length > 0)
@@ -663,11 +785,11 @@ async function loadMgrShiftsSection() {
   const scheduleSelect = document.getElementById('mgr-schedule-select');
 
   try {
-    const companies = await fetch(`${API_URL}/companies`).then(handleApiResponse);
+    const companies = await authFetch(`${API_URL}/companies`).then(handleApiResponse);
     state.companies = companies || [];
     const allBranches = [];
     for (const c of companies) {
-      const bList = await fetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
+      const bList = await authFetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
       allBranches.push(...(bList || []));
     }
     state.branches = allBranches;
@@ -692,7 +814,7 @@ async function loadMgrSchedulesForBranch(branchId) {
   if (!branchId) return;
 
   try {
-    const schedules = await fetch(`${API_URL}/schedules/branch/${branchId}`).then(handleApiResponse);
+    const schedules = await authFetch(`${API_URL}/schedules/branch/${branchId}`).then(handleApiResponse);
     (schedules || []).forEach(s => {
       scheduleSelect.innerHTML += `<option value="${s.id}">График #${s.id} (${s.dateFrom} — ${s.dateTo})</option>`;
     });
@@ -721,7 +843,7 @@ async function loadMgrShiftsForSchedule(scheduleId) {
   }
 
   try {
-    const res = await fetch(`${API_URL}/shifts/schedule/${scheduleId}?page=0&size=50`);
+    const res = await authFetch(`${API_URL}/shifts/schedule/${scheduleId}?page=0&size=50`);
     const totalCount = res.headers.get('X-Total-Count');
     const shifts = await handleApiResponse(res);
 
@@ -789,7 +911,7 @@ function openAssignShiftModal(shiftId, shiftDate, shiftTime) {
 async function removeEmployeeFromShift(shiftId, employeeId) {
   if (!confirm(`Снять сотрудника с этой смены?`)) return;
   try {
-    await fetch(`${API_URL}/shifts/${shiftId}/employees/${employeeId}`, {
+    await authFetch(`${API_URL}/shifts/${shiftId}/employees/${employeeId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ actorEmployeeId: state.currentEmployeeId })
@@ -805,7 +927,7 @@ async function removeEmployeeFromShift(shiftId, employeeId) {
 async function deleteShift(shiftId) {
   if (!confirm(`Удалить смену #${shiftId}?`)) return;
   try {
-    await fetch(`${API_URL}/shifts/${shiftId}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/shifts/${shiftId}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Смена удалена из графика', 'info');
     loadMgrShiftsForSchedule(state.mgrSelectedScheduleId);
   } catch (err) {
@@ -819,7 +941,7 @@ async function openShiftLogsModal(shiftId) {
   document.getElementById('modal-shift-logs').showModal();
 
   try {
-    const logs = await fetch(`${API_URL}/shifts/${shiftId}/logs`).then(handleApiResponse);
+    const logs = await authFetch(`${API_URL}/shifts/${shiftId}/logs`).then(handleApiResponse);
     tbody.innerHTML = '';
     if (!logs || logs.length === 0) {
       tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Журнал пуст</td></tr>';
@@ -854,7 +976,7 @@ async function loadMgrAttendance(reset = false) {
   }
 
   try {
-    const res = await fetch(`${API_URL}/attendance?page=${state.mgrAttendancePage}&size=10`).then(handleApiResponse);
+    const res = await authFetch(`${API_URL}/attendance?page=${state.mgrAttendancePage}&size=10`).then(handleApiResponse);
     const content = res.content || [];
     state.mgrAttendanceHasNext = res.hasNext;
 
@@ -897,7 +1019,7 @@ async function loadTeamRequests() {
   const url = statusFilter ? `${API_URL}/requests?status=${statusFilter}` : `${API_URL}/requests`;
 
   try {
-    const res = await fetch(url).then(handleApiResponse);
+    const res = await authFetch(url).then(handleApiResponse);
     const requests = Array.isArray(res) ? res : (res.content || []);
     tbody.innerHTML = '';
 
@@ -955,8 +1077,8 @@ async function loadHrEmployees() {
   const tbody = document.getElementById('hr-employees-table-body');
   try {
     const [empRes, usersRes] = await Promise.all([
-      fetch(`${API_URL}/employees?size=50`).then(handleApiResponse),
-      fetch(`${API_URL}/users`).then(handleApiResponse).catch(() => [])
+      authFetch(`${API_URL}/employees?size=50`).then(handleApiResponse),
+      authFetch(`${API_URL}/users`).then(handleApiResponse).catch(() => [])
     ]);
 
     const employees = Array.isArray(empRes) ? empRes : (empRes.content || []);
@@ -977,7 +1099,7 @@ async function loadHrEmployees() {
     const assignmentsMap = {};
     await Promise.all(employees.map(async emp => {
       try {
-        const assigns = await fetch(`${API_URL}/employees/${emp.id}/assignments`).then(handleApiResponse);
+        const assigns = await authFetch(`${API_URL}/employees/${emp.id}/assignments`).then(handleApiResponse);
         assignmentsMap[emp.id] = assigns || [];
       } catch (e) {
         assignmentsMap[emp.id] = [];
@@ -1051,7 +1173,7 @@ async function dismissEmployee(id, name) {
   const label = empName ? ` (${empName})` : '';
   if (!confirm(`Уволить сотрудника #${id}${label}? Статус будет переведён в DISMISSED.`)) return;
   try {
-    await fetch(`${API_URL}/employees/${id}/dismiss`, { method: 'POST' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/employees/${id}/dismiss`, { method: 'POST' }).then(handleApiResponse);
     showToast(`Сотрудник #${id}${label} уволен (DISMISSED)`, 'warning');
     loadHrEmployees();
     loadEmployeesList();
@@ -1066,7 +1188,7 @@ async function rehireEmployee(id, name) {
   const label = empName ? ` (${empName})` : '';
   if (!confirm(`Принять сотрудника #${id}${label} обратно на работу? Статус будет изменен на ACTIVE.`)) return;
   try {
-    await fetch(`${API_URL}/employees/${id}/rehire`, { method: 'POST' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/employees/${id}/rehire`, { method: 'POST' }).then(handleApiResponse);
     showToast(`Сотрудник #${id}${label} принят обратно на работу`, 'success');
     loadHrEmployees();
     loadEmployeesList();
@@ -1082,7 +1204,7 @@ async function openAssignEmployeeModal(preselectedEmpId = null) {
 
   // Load employees if empty
   if (!state.employees || state.employees.length === 0) {
-    const empRes = await fetch(`${API_URL}/employees?size=50`).then(handleApiResponse).catch(() => []);
+    const empRes = await authFetch(`${API_URL}/employees?size=50`).then(handleApiResponse).catch(() => []);
     state.employees = Array.isArray(empRes) ? empRes : (empRes.content || []);
   }
 
@@ -1090,8 +1212,8 @@ async function openAssignEmployeeModal(preselectedEmpId = null) {
   if (!state.branches || state.branches.length === 0 || !state.positions || state.positions.length === 0) {
     try {
       const [companies, positions] = await Promise.all([
-        fetch(`${API_URL}/companies`).then(handleApiResponse).catch(() => []),
-        fetch(`${API_URL}/positions`).then(handleApiResponse).catch(() => [])
+        authFetch(`${API_URL}/companies`).then(handleApiResponse).catch(() => []),
+        authFetch(`${API_URL}/positions`).then(handleApiResponse).catch(() => [])
       ]);
       state.positions = Array.isArray(positions) ? positions : (positions.content || []);
       state.companies = Array.isArray(companies) ? companies : (companies.content || []);
@@ -1099,7 +1221,7 @@ async function openAssignEmployeeModal(preselectedEmpId = null) {
       const branches = [];
       for (const c of state.companies) {
         try {
-          const bList = await fetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
+          const bList = await authFetch(`${API_URL}/branches/company/${c.id}`).then(handleApiResponse);
           if (Array.isArray(bList)) branches.push(...bList);
         } catch (e) {}
       }
@@ -1146,7 +1268,7 @@ async function openAssignEmployeeModal(preselectedEmpId = null) {
 async function deleteEmployee(id, name) {
   if (!confirm(`Полностью удалить сотрудника #${id} (${name}) из базы данных?`)) return;
   try {
-    await fetch(`${API_URL}/employees/${id}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/employees/${id}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Сотрудник удален из базы данных', 'info');
     loadHrEmployees();
     loadEmployeesList();
@@ -1159,7 +1281,7 @@ async function deleteEmployee(id, name) {
 async function loadHrUsers() {
   const tbody = document.getElementById('hr-users-table-body');
   try {
-    const users = await fetch(`${API_URL}/users`).then(handleApiResponse);
+    const users = await authFetch(`${API_URL}/users`).then(handleApiResponse);
     state.users = Array.isArray(users) ? users : [];
     tbody.innerHTML = '';
 
@@ -1267,7 +1389,7 @@ function openEditUserRoleModal(userId) {
 async function deleteUser(id, login) {
   if (!confirm(`Удалить учетную запись пользователя #${id} (${login})?`)) return;
   try {
-    await fetch(`${API_URL}/users/${id}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/users/${id}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Учетная запись пользователя удалена', 'info');
     loadHrUsers();
     loadHrEmployees();
@@ -1284,7 +1406,7 @@ async function loadHrOrg() {
 
   const compSelect = document.getElementById('hr-branch-company-select');
   try {
-    const companies = await fetch(`${API_URL}/companies`).then(handleApiResponse);
+    const companies = await authFetch(`${API_URL}/companies`).then(handleApiResponse);
     compSelect.innerHTML = '<option value="">Выберите компанию...</option>';
     (companies || []).forEach(c => {
       compSelect.innerHTML += `<option value="${c.id}">${escapeHtml(c.name)}</option>`;
@@ -1299,7 +1421,7 @@ async function loadHrOrg() {
 async function loadHrCompanies() {
   const tbody = document.getElementById('hr-companies-table-body');
   try {
-    const res = await fetch(`${API_URL}/companies`).then(handleApiResponse);
+    const res = await authFetch(`${API_URL}/companies`).then(handleApiResponse);
     const companies = Array.isArray(res) ? res : (res.content || []);
     tbody.innerHTML = '';
     if (companies.length === 0) {
@@ -1323,7 +1445,7 @@ async function loadHrCompanies() {
 async function loadHrPositions() {
   const tbody = document.getElementById('hr-positions-table-body');
   try {
-    const positions = await fetch(`${API_URL}/positions`).then(handleApiResponse);
+    const positions = await authFetch(`${API_URL}/positions`).then(handleApiResponse);
     state.positions = positions || [];
     tbody.innerHTML = '';
     if (positions.length === 0) {
@@ -1351,7 +1473,7 @@ async function loadHrBranchesForCompany(companyId) {
     return;
   }
   try {
-    const branches = await fetch(`${API_URL}/branches/company/${companyId}`).then(handleApiResponse);
+    const branches = await authFetch(`${API_URL}/branches/company/${companyId}`).then(handleApiResponse);
     tbody.innerHTML = '';
     if (!branches || branches.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Филиалов пока нет</td></tr>';
@@ -1377,7 +1499,7 @@ async function loadHrBranchesForCompany(companyId) {
 async function deleteCompany(id) {
   if (!confirm(`Удалить компанию #${id}? Все связанные филиалы также будут удалены.`)) return;
   try {
-    await fetch(`${API_URL}/companies/${id}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/companies/${id}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Компания удалена', 'info');
     loadHrOrg();
   } catch (err) {
@@ -1388,7 +1510,7 @@ async function deleteCompany(id) {
 async function deletePosition(id) {
   if (!confirm(`Удалить должность #${id}?`)) return;
   try {
-    await fetch(`${API_URL}/positions/${id}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/positions/${id}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Должность удалена', 'info');
     loadHrPositions();
   } catch (err) {
@@ -1399,7 +1521,7 @@ async function deletePosition(id) {
 async function deleteBranch(id) {
   if (!confirm(`Удалить филиал #${id}?`)) return;
   try {
-    await fetch(`${API_URL}/branches/${id}`, { method: 'DELETE' }).then(handleApiResponse);
+    await authFetch(`${API_URL}/branches/${id}`, { method: 'DELETE' }).then(handleApiResponse);
     showToast('Филиал удален', 'info');
     const compSelect = document.getElementById('hr-branch-company-select');
     loadHrBranchesForCompany(compSelect.value);
@@ -1439,7 +1561,7 @@ function initManagementFormListeners() {
     const hireDate = document.getElementById('emp-hire').value || new Date().toISOString().substring(0, 10);
 
     try {
-      const newEmp = await fetch(`${API_URL}/employees`, {
+      const newEmp = await authFetch(`${API_URL}/employees`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, phone, birthDate, hireDate, status: 'ACTIVE' })
@@ -1454,7 +1576,7 @@ function initManagementFormListeners() {
         const roleId = Number(document.getElementById('emp-user-role').value);
         if (login) {
           try {
-            await fetch(`${API_URL}/users`, {
+            await authFetch(`${API_URL}/users`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ employeeId: newEmp.id, roleId, login })
@@ -1486,7 +1608,7 @@ function initManagementFormListeners() {
     const isPrimary = document.getElementById('assign-is-primary').checked;
 
     try {
-      await fetch(`${API_URL}/employees/assignments`, {
+      await authFetch(`${API_URL}/employees/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1517,14 +1639,14 @@ function initManagementFormListeners() {
 
     try {
       if (userId) {
-        await fetch(`${API_URL}/users/${userId}`, {
+        await authFetch(`${API_URL}/users/${userId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ login, roleId, employeeId })
         }).then(handleApiResponse);
         showToast(`Пользователь "${login}" обновлен`, 'success');
       } else {
-        await fetch(`${API_URL}/users`, {
+        await authFetch(`${API_URL}/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ login, roleId, employeeId })
@@ -1554,7 +1676,7 @@ function initManagementFormListeners() {
     }
 
     try {
-      const res = await fetch(`${API_URL}/schedules`, {
+      const res = await authFetch(`${API_URL}/schedules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ branchId: Number(branchId), dateFrom, dateTo })
@@ -1579,7 +1701,7 @@ function initManagementFormListeners() {
     const breakMinutes = Number(document.getElementById('shift-break').value) || 0;
 
     try {
-      await fetch(`${API_URL}/shifts`, {
+      await authFetch(`${API_URL}/shifts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1606,7 +1728,7 @@ function initManagementFormListeners() {
     const employeeId = document.getElementById('shift-assign-emp-id').value;
 
     try {
-      await fetch(`${API_URL}/shifts/${shiftId}/employees`, {
+      await authFetch(`${API_URL}/shifts/${shiftId}/employees`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1631,7 +1753,7 @@ function initManagementFormListeners() {
     const comment = document.getElementById('process-comment').value.trim();
 
     try {
-      await fetch(`${API_URL}/requests/${id}/resolution`, {
+      await authFetch(`${API_URL}/requests/${id}/resolution`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1654,7 +1776,7 @@ function initManagementFormListeners() {
     e.preventDefault();
     const name = document.getElementById('company-name').value.trim();
     try {
-      await fetch(`${API_URL}/companies`, {
+      await authFetch(`${API_URL}/companies`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })
@@ -1673,7 +1795,7 @@ function initManagementFormListeners() {
     e.preventDefault();
     const title = document.getElementById('position-title').value.trim();
     try {
-      await fetch(`${API_URL}/positions`, {
+      await authFetch(`${API_URL}/positions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title })
@@ -1696,7 +1818,7 @@ function initManagementFormListeners() {
     const phone = document.getElementById('branch-phone').value.trim();
 
     try {
-      await fetch(`${API_URL}/branches`, {
+      await authFetch(`${API_URL}/branches`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ companyId: Number(companyId), name, address, phone, isActive: true })
@@ -1839,12 +1961,169 @@ window.addEventListener('DOMContentLoaded', async () => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
-  document.getElementById('req-date-from').value = formatLocalDate(tomorrow);
-  document.getElementById('req-date-to').value = formatLocalDate(nextWeek);
+  const df = document.getElementById('req-date-from');
+  const dt = document.getElementById('req-date-to');
+  if (df) df.value = formatLocalDate(tomorrow);
+  if (dt) dt.value = formatLocalDate(nextWeek);
 
-  document.getElementById('current-user-select').addEventListener('change', (e) => {
-    onEmployeeChanged(e.target.value);
+  // JWT Инспектор
+  document.getElementById('btn-inspect-jwt')?.addEventListener('click', () => {
+    const modal = document.getElementById('modal-jwt-inspector');
+    const rawEl = document.getElementById('jwt-raw-token');
+    const bodyEl = document.getElementById('jwt-claims-body');
+    if (!auth.isAuthenticated()) {
+      showToast('Сначала необходимо авторизоваться', 'warning');
+      openAuthModal();
+      return;
+    }
+    rawEl.value = auth.token;
+    const claims = auth.decodeToken();
+    bodyEl.innerHTML = "";
+    if (claims) {
+      const items = [
+        { claim: "sub", val: claims.sub, desc: "Логин пользователя" },
+        { claim: "role", val: claims.role, desc: "Системная роль (Authority)" },
+        { claim: "employeeId", val: claims.employeeId ?? "null", desc: "ID привязанного сотрудника" },
+        { claim: "userId", val: claims.userId ?? "null", desc: "ID учетной записи" },
+        { claim: "iat", val: claims.iat ? new Date(claims.iat * 1000).toLocaleString() : "-", desc: "Время выдачи токена" },
+        { claim: "exp", val: claims.exp ? new Date(claims.exp * 1000).toLocaleString() : "-", desc: "Срок действия токена" }
+      ];
+      items.forEach(it => {
+        bodyEl.innerHTML += `<tr><td><code>${it.claim}</code></td><td><strong>${it.val}</strong></td><td style="color:var(--text-muted)">${it.desc}</td></tr>`;
+      });
+    }
+    modal.showModal();
   });
 
+  // Копирование JWT токена
+  document.getElementById('btn-copy-jwt')?.addEventListener('click', () => {
+    const rawEl = document.getElementById('jwt-raw-token');
+    navigator.clipboard.writeText(rawEl.value).then(() => {
+      showToast('JWT токен скопирован в буфер обмена!', 'success');
+    }).catch(() => {
+      rawEl.select();
+      document.execCommand('copy');
+      showToast('JWT токен скопирован!', 'success');
+    });
+  });
+
+  // Выпадающее меню быстрой смены роли
+  const btnQuickSwitch = document.getElementById('btn-quick-switch');
+  const quickMenu = document.getElementById('quick-switch-menu');
+  if (btnQuickSwitch && quickMenu) {
+    btnQuickSwitch.addEventListener('click', (e) => {
+      e.stopPropagation();
+      quickMenu.style.display = quickMenu.style.display === 'none' ? 'flex' : 'none';
+    });
+
+    document.addEventListener('click', () => {
+      quickMenu.style.display = 'none';
+    });
+  }
+
+  // Обработчики кнопок быстрого входа
+  document.querySelectorAll('.demo-quick-login, .demo-login-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const login = btn.dataset.login;
+      const pass = btn.dataset.pass;
+      try {
+        await auth.login(login, pass);
+        if (quickMenu) quickMenu.style.display = 'none';
+        document.getElementById('modal-auth')?.close();
+        showToast(`Вы успешно вошли как ${login} (${auth.getRole()})`, 'success');
+        state.currentEmployeeId = auth.getEmployeeId() || 2;
+        await onEmployeeChanged(state.currentEmployeeId);
+      } catch (err) {
+        showToast(err.message, 'danger');
+      }
+    });
+  });
+
+  // Форма ручного логина
+  document.getElementById('form-auth-login')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const login = document.getElementById('auth-input-login').value.trim();
+    const pass = document.getElementById('auth-input-password').value;
+    const errEl = document.getElementById('auth-error-msg');
+    if (errEl) errEl.style.display = 'none';
+
+    try {
+      await auth.login(login, pass);
+      document.getElementById('modal-auth')?.close();
+      showToast(`Вы успешно вошли как ${login} (${auth.getRole()})`, 'success');
+      state.currentEmployeeId = auth.getEmployeeId() || 2;
+      await onEmployeeChanged(state.currentEmployeeId);
+    } catch (err) {
+      if (errEl) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+      }
+    }
+  });
+
+  // Кнопка Выйти
+  document.getElementById('btn-logout')?.addEventListener('click', () => {
+    auth.clear();
+    showToast('Вы вышли из учетной записи', 'info');
+    openAuthModal();
+  });
+
+  // Тест изоляции данных (Требование ЛР3)
+  document.getElementById('btn-test-data-isolation')?.addEventListener('click', async () => {
+    const resEl = document.getElementById('data-isolation-result');
+    if (!resEl) return;
+    resEl.textContent = "Выполняется запрос к чужому сотруднику ID=1 (GET /api/employees/1)...";
+    resEl.className = "isolation-result-text";
+
+    try {
+      const res = await authFetch(`${API_URL}/employees/1`);
+      if (res.ok) {
+        const data = await res.json();
+        resEl.textContent = `✅ 200 OK: Доступ разрешен (Роль ${auth.getRole()} имеет доступ к сотруднику ${data.name})`;
+        resEl.className = "isolation-result-text success";
+      } else if (res.status === 403) {
+        resEl.textContent = `⛔ 403 Forbidden: Spring Security успешно запретил доступ! "Сотрудник имеет доступ только к собственной информации"`;
+        resEl.className = "isolation-result-text denied";
+      } else {
+        resEl.textContent = `Ответ сервера: HTTP ${res.status}`;
+      }
+    } catch (err) {
+      resEl.textContent = `⛔ Изоляция активна: ${err.message}`;
+      resEl.className = "isolation-result-text denied";
+    }
+  });
+
+  // Инициализация авторизации
+  auth.init();
+  if (!auth.isAuthenticated()) {
+    // Автоматический вход под barista_dmitry при первом открытии кабинета сотрудника
+    try {
+      await auth.login("barista_dmitry", "password123");
+    } catch (e) {
+      openAuthModal();
+    }
+  } else {
+    updateAuthUI();
+  }
+
+  state.currentEmployeeId = auth.getEmployeeId() || 2;
   await loadEmployeesList();
 });
+
+function openAuthModal(notice = "") {
+  const modal = document.getElementById('modal-auth');
+  if (!modal) return;
+  const errEl = document.getElementById('auth-error-msg');
+  if (errEl) {
+    if (notice) {
+      errEl.textContent = notice;
+      errEl.style.display = 'block';
+    } else {
+      errEl.style.display = 'none';
+    }
+  }
+  if (!modal.open) {
+    modal.showModal();
+  }
+}

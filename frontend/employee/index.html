@@ -19,17 +19,51 @@
       </div>
     </div>
 
-    <div class="user-selector-container">
-      <label for="current-user-select">Сотрудник:</label>
-      <select id="current-user-select" class="form-select">
-        <option value="">Загрузка списка...</option>
-      </select>
-      <span id="current-user-role-badge" class="badge badge-gray" style="margin-left: 6px;">Роль: ...</span>
-      <div id="admin-portal-link-container" style="margin-left: 8px;">
-        <a id="btn-open-admin-portal" href="http://localhost:3000" target="_blank" class="btn-portal-role" style="display: none;">
-          Сервисная панель (Admin)
-        </a>
+    <div class="user-auth-bar" id="user-auth-bar">
+      <div class="auth-user-info" id="auth-user-info">
+        <span class="auth-avatar" id="auth-avatar">☕</span>
+        <div class="auth-details">
+          <span class="auth-username" id="auth-username">barista_dmitry</span>
+          <span class="badge badge-blue" id="auth-role-badge">☕ EMPLOYEE</span>
+        </div>
       </div>
+
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-inspect-jwt" title="Просмотреть текущий JWT токен и claims">
+        🔑 JWT
+      </button>
+
+      <!-- Быстрое переключение учетной записи -->
+      <div class="dropdown-container">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-switch" title="Быстро войти под другой системной ролью">
+          🔄 Сменить роль ▾
+        </button>
+        <div class="dropdown-menu" id="quick-switch-menu" style="display: none;">
+          <div class="dropdown-header">Быстрый вход для защиты (1 клик):</div>
+          <button type="button" class="dropdown-item demo-quick-login" data-login="barista_dmitry" data-pass="password123">
+            <strong>☕ barista_dmitry</strong> &nbsp;(Бариста #2)
+          </button>
+          <button type="button" class="dropdown-item demo-quick-login" data-login="barista_anastasia" data-pass="password123">
+            <strong>☕ barista_anastasia</strong> &nbsp;(Бариста #3)
+          </button>
+          <button type="button" class="dropdown-item demo-quick-login" data-login="manager_sokolov" data-pass="password123">
+            <strong>📋 manager_sokolov</strong> &nbsp;(Управляющий / MANAGER)
+          </button>
+          <button type="button" class="dropdown-item demo-quick-login" data-login="hr_morozova" data-pass="password123">
+            <strong>💼 hr_morozova</strong> &nbsp;(Кадровик / HR)
+          </button>
+          <button type="button" class="dropdown-item demo-quick-login" data-login="admin" data-pass="admin123">
+            <strong>👑 admin</strong> &nbsp;(Супервайзер / ADMIN)
+          </button>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" title="Выйти из учетной записи">
+        Выйти
+      </button>
+
+      <a id="btn-open-admin-portal" href="http://localhost:3000" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; text-decoration: none;">
+        Панель управления (Admin) ↗
+      </a>
     </div>
   </header>
 
@@ -233,6 +267,31 @@
 
     <!-- ТАБ 5: МОЙ ПРОФИЛЬ -->
     <div id="tab-profile" class="tab-content">
+      <!-- Инфо-баннер требований Лабораторной №3 -->
+      <div class="lab3-notice-card" id="lab3-employee-notice">
+        <div class="lab3-notice-header">
+          <span class="lab3-badge">Лабораторная работа №3</span>
+          <h4>Контроль доступа, авторизация JWT и изоляция данных</h4>
+        </div>
+        <div class="lab3-features-grid">
+          <div class="lab3-feature-item">
+            <strong>🔒 JWT Bearer:</strong> Каждый запрос к микросервисам подписывается криптографическим токеном с правами роли в заголовке <code>Authorization</code>.
+          </div>
+          <div class="lab3-feature-item">
+            <strong>🛡️ Изоляция данных (Data Isolation):</strong> Линейный сотрудник имеет доступ исключительно к собственной информации. Доступ к чужим карточкам или чужим сменам блокируется сервером (<code>403 Forbidden</code>).
+          </div>
+          <div class="lab3-feature-item">
+            <strong>👑 Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (<code>ADMIN</code>). Линейный сотрудник не может изменять пользователей.
+          </div>
+        </div>
+        <div class="lab3-actions" style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-warning btn-sm" id="btn-test-data-isolation">
+            🧪 Проверить изоляцию данных (Запрос чужой карточки #1 с моим токеном)
+          </button>
+          <span id="data-isolation-result" class="isolation-result-text"></span>
+        </div>
+      </div>
+
       <div class="card">
         <h2 class="card-title">Карточка сотрудника</h2>
         <p class="card-subtitle">Персональные данные и назначения на ставки</p>
@@ -821,6 +880,88 @@
         <button type="submit" class="btn btn-primary">Применить решение</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- Модалка: Аутентификация (JWT Login) -->
+  <dialog id="modal-auth" style="max-width: 520px; width: 92%;">
+    <div class="modal-header">
+      <h4>🔐 Вход в Личный кабинет (JWT Auth)</h4>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Для доступа к сменам и отметке явок требуется авторизация по стандарту <strong>Spring Security + JWT</strong>. Выберите предустановленный аккаунт или укажите логин и пароль:
+      </p>
+
+      <div class="quick-login-section" style="margin-bottom: 18px;">
+        <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">
+          Быстрый вход для защиты (1 клик):
+        </label>
+        <div class="demo-accounts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_dmitry" data-pass="password123">
+            ☕ <strong>barista_dmitry</strong> <small>(Бариста #2)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_anastasia" data-pass="password123">
+            ☕ <strong>barista_anastasia</strong> <small>(Бариста #3)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="manager_sokolov" data-pass="password123">
+            📋 <strong>manager_sokolov</strong> <small>(Управляющий)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="admin" data-pass="admin123">
+            👑 <strong>admin</strong> <small>(Супервайзер)</small>
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 16px 0; position: relative;">
+        <hr style="border: none; border-top: 1px solid var(--border);">
+        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #fff; padding: 0 10px; font-size: 12px; color: var(--text-muted);">или логин и пароль</span>
+      </div>
+
+      <form id="form-auth-login">
+        <div class="form-group">
+          <label for="auth-input-login">Логин *</label>
+          <input type="text" id="auth-input-login" class="form-control" required placeholder="Например: barista_dmitry">
+        </div>
+        <div class="form-group">
+          <label for="auth-input-password">Пароль *</label>
+          <input type="password" id="auth-input-password" class="form-control" required placeholder="Например: password123">
+        </div>
+        <div id="auth-error-msg" style="display: none; color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px;"></div>
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn btn-primary" id="btn-submit-auth" style="width: 100%; padding: 10px;">
+            Войти и получить JWT токен
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Модалка: Инспектор JWT токена -->
+  <dialog id="modal-jwt-inspector" style="max-width: 600px; width: 92%;">
+    <div class="modal-header">
+      <h4>🔑 Инспектор JWT токена (Spring Security)</h4>
+      <button type="button" class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Сырой JWT Bearer токен (передается в <code>Authorization: Bearer ...</code>):</label>
+        <textarea id="jwt-raw-token" class="form-control" rows="4" readonly style="font-family: monospace; font-size: 11px; word-break: break-all; background: #f8fafc;"></textarea>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 6px;" id="btn-copy-jwt">📋 Скопировать токен</button>
+      </div>
+
+      <div class="form-group" style="margin-top: 16px;">
+        <label>Декодированные клеймы токена (Claims / Payload):</label>
+        <table class="data-table" style="font-size: 13px; margin-top: 6px;">
+          <thead>
+            <tr><th>Claim</th><th>Значение</th><th>Назначение</th></tr>
+          </thead>
+          <tbody id="jwt-claims-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary btn-close-modal">Закрыть</button>
+    </div>
   </dialog>
 
   <script src="app.js"></script>

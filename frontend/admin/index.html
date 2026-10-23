@@ -63,14 +63,49 @@
         <p id="current-page-subtitle">Общий обзор состояния компаний и сотрудников</p>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <label for="admin-role-select" style="font-size: 13px; font-weight: 600; color: var(--text-muted);">Режим роли:</label>
-          <select id="admin-role-select" class="form-control" style="width: auto; padding: 6px 12px; font-weight: 600; background: #fff; cursor: pointer;">
-            <option value="ADMIN">ADMIN (Администратор — Полный доступ)</option>
-            <option value="HR">HR (Кадры — Структура, Люди, Роли, Отпуска)</option>
-            <option value="MANAGER">MANAGER (Управляющий — Смены, Графики, Табель)</option>
-          </select>
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <!-- Панель JWT Авторизации -->
+        <div class="user-auth-bar" id="user-auth-bar">
+          <div class="auth-user-info" id="auth-user-info">
+            <span class="auth-avatar" id="auth-avatar">👤</span>
+            <div class="auth-details">
+              <span class="auth-username" id="auth-username">admin</span>
+              <span class="badge badge-red" id="auth-role-badge">👑 ADMIN (Супервайзер)</span>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-inspect-jwt" title="Просмотреть текущий JWT токен и claims">
+            🔑 JWT
+          </button>
+
+          <!-- Быстрое переключение учетной записи -->
+          <div class="dropdown-container">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-switch" title="Быстро войти под другой системной ролью">
+              🔄 Сменить роль ▾
+            </button>
+            <div class="dropdown-menu" id="quick-switch-menu" style="display: none;">
+              <div class="dropdown-header">Быстрый вход для защиты (1 клик):</div>
+              <button type="button" class="dropdown-item demo-quick-login" data-login="admin" data-pass="admin123">
+                <strong>👑 admin</strong> &nbsp;(Супервайзер / ADMIN)
+              </button>
+              <button type="button" class="dropdown-item demo-quick-login" data-login="hr_morozova" data-pass="password123">
+                <strong>💼 hr_morozova</strong> &nbsp;(Кадровик / HR)
+              </button>
+              <button type="button" class="dropdown-item demo-quick-login" data-login="manager_sokolov" data-pass="password123">
+                <strong>📋 manager_sokolov</strong> &nbsp;(Управляющий / MANAGER)
+              </button>
+              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_dmitry" data-pass="password123">
+                <strong>☕ barista_dmitry</strong> &nbsp;(Бариста / EMPLOYEE #2)
+              </button>
+              <button type="button" class="dropdown-item demo-quick-login" data-login="barista_anastasia" data-pass="password123">
+                <strong>☕ barista_anastasia</strong> &nbsp;(Бариста / EMPLOYEE #3)
+              </button>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" title="Выйти из учетной записи">
+            Выйти
+          </button>
         </div>
 
         <div id="backend-status" class="status-badge offline">
@@ -240,6 +275,31 @@
 
       <!-- ПОЛЬЗОВАТЕЛИ И ДОСТУП -->
       <section id="section-users" class="section">
+        <!-- Инфо-баннер требований Лабораторной №3 -->
+        <div class="lab3-notice-card" id="lab3-users-notice">
+          <div class="lab3-notice-header">
+            <span class="lab3-badge">Лабораторная работа №3</span>
+            <h4>Контроль доступа, хэширование паролей и ролевая модель</h4>
+          </div>
+          <div class="lab3-features-grid">
+            <div class="lab3-feature-item">
+              <strong>👑 Супервайзеры:</strong> Пользователей могут создавать только супервайзеры (роль <code>ADMIN</code>). Для остальных ролей создание заблокировано Spring Security.
+            </div>
+            <div class="lab3-feature-item">
+              <strong>🔒 Безопасность паролей:</strong> Все пароли хэшируются через <code>BCrypt</code> и никогда не возвращаются в ответах API (защищено аннотацией <code>WRITE_ONLY</code>).
+            </div>
+            <div class="lab3-feature-item">
+              <strong>🧪 Изоляция данных:</strong> Линейный персонал (<code>EMPLOYEE</code>) видит только свою учетную запись. Чужие профили недоступны (<code>403 Forbidden</code>).
+            </div>
+          </div>
+          <div class="lab3-actions" style="margin-top: 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-warning btn-sm" id="btn-test-data-isolation">
+              🧪 Протестировать изоляцию данных (Запрос чужого ID с токеном)
+            </button>
+            <span id="data-isolation-result" class="isolation-result-text"></span>
+          </div>
+        </div>
+
         <div class="panel">
           <div class="panel-header">
             <div>
@@ -256,6 +316,7 @@
                 <tr>
                   <th>ID</th>
                   <th>Логин</th>
+                  <th>Пароль в БД</th>
                   <th>Привязанный сотрудник</th>
                   <th>Роль в системе</th>
                   <th>Статус</th>
@@ -264,7 +325,7 @@
                 </tr>
               </thead>
               <tbody id="users-table-body">
-                <tr><td colspan="7" style="text-align: center;">Загрузка списка пользователей...</td></tr>
+                <tr><td colspan="8" style="text-align: center;">Загрузка списка пользователей...</td></tr>
               </tbody>
             </table>
           </div>
@@ -479,6 +540,10 @@
               <input type="text" id="emp-user-login" class="form-control" placeholder="Например: ivan_manager">
             </div>
             <div class="form-group">
+              <label for="emp-user-password">Пароль (хэшируется BCrypt)</label>
+              <input type="password" id="emp-user-password" class="form-control" placeholder="По умолчанию: password123">
+            </div>
+            <div class="form-group">
               <label for="emp-user-role">Роль в системе (0-3)</label>
               <select id="emp-user-role" class="form-control">
                 <option value="3">3 — EMPLOYEE (Линейный сотрудник)</option>
@@ -515,6 +580,13 @@
         <div class="form-group">
           <label for="user-login">Логин *</label>
           <input type="text" id="user-login" class="form-control" required minlength="3" maxlength="100" placeholder="Логин">
+        </div>
+        <div class="form-group" id="group-user-password">
+          <label for="user-password">Пароль (хэшируется BCrypt при сохранении) *</label>
+          <input type="password" id="user-password" class="form-control" placeholder="Например: password123 (мин. 6 символов)">
+          <small style="color: var(--text-muted); font-size: 12px; margin-top: 4px; display: block;">
+            🔒 Хэш пароля никогда не возвращается в ответах API.
+          </small>
         </div>
         <div class="form-group">
           <label for="user-role-select">Системная роль (0-3) *</label>
@@ -706,6 +778,88 @@
         <button type="submit" class="btn btn-primary">Применить решение</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- Модалка: Аутентификация (JWT Login) -->
+  <dialog id="modal-auth" style="max-width: 520px; width: 92%;">
+    <div class="modal-header">
+      <h4>🔐 Вход в Систему (Spring Security + JWT)</h4>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Для работы с API требуется авторизация по стандарту <strong>JWT Bearer</strong>. Выберите предустановленный аккаунт или укажите логин и пароль:
+      </p>
+
+      <div class="quick-login-section" style="margin-bottom: 18px;">
+        <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">
+          Быстрый вход для защиты (1 клик):
+        </label>
+        <div class="demo-accounts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="admin" data-pass="admin123">
+            👑 <strong>admin</strong> <small>(Супервайзер)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="hr_morozova" data-pass="password123">
+            💼 <strong>hr_morozova</strong> <small>(Кадры)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="manager_sokolov" data-pass="password123">
+            📋 <strong>manager_sokolov</strong> <small>(Управляющий)</small>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm demo-login-btn" data-login="barista_dmitry" data-pass="password123">
+            ☕ <strong>barista_dmitry</strong> <small>(Бариста #2)</small>
+          </button>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin: 16px 0; position: relative;">
+        <hr style="border: none; border-top: 1px solid var(--border);">
+        <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #fff; padding: 0 10px; font-size: 12px; color: var(--text-muted);">или логин и пароль</span>
+      </div>
+
+      <form id="form-auth-login">
+        <div class="form-group">
+          <label for="auth-input-login">Логин *</label>
+          <input type="text" id="auth-input-login" class="form-control" required placeholder="Например: admin">
+        </div>
+        <div class="form-group">
+          <label for="auth-input-password">Пароль *</label>
+          <input type="password" id="auth-input-password" class="form-control" required placeholder="Например: admin123">
+        </div>
+        <div id="auth-error-msg" style="display: none; color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px;"></div>
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn btn-primary" id="btn-submit-auth" style="width: 100%; padding: 10px;">
+            Войти и получить JWT токен
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Модалка: Инспектор JWT токена -->
+  <dialog id="modal-jwt-inspector" style="max-width: 600px; width: 92%;">
+    <div class="modal-header">
+      <h4>🔑 Инспектор JWT токена (Spring Security)</h4>
+      <button type="button" class="btn btn-secondary btn-sm btn-close-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Сырой JWT Bearer токен (передается в <code>Authorization: Bearer ...</code>):</label>
+        <textarea id="jwt-raw-token" class="form-control" rows="4" readonly style="font-family: monospace; font-size: 11px; word-break: break-all; background: #f8fafc;"></textarea>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 6px;" id="btn-copy-jwt">📋 Скопировать токен</button>
+      </div>
+
+      <div class="form-group" style="margin-top: 16px;">
+        <label>Декодированные клеймы токена (Claims / Payload):</label>
+        <table class="data-table" style="font-size: 13px; margin-top: 6px;">
+          <thead>
+            <tr><th>Claim</th><th>Значение</th><th>Назначение</th></tr>
+          </thead>
+          <tbody id="jwt-claims-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary btn-close-modal">Закрыть</button>
+    </div>
   </dialog>
 
   <script src="app.js"></script>
