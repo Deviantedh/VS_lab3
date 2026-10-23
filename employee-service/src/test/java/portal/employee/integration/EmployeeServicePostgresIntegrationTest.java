@@ -20,7 +20,7 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(classes = portal.employee.EmployeeServiceApplication.class)
 @ActiveProfiles("test")
 @DisabledIf("isDockerNotAvailable")
 @Testcontainers(disabledWithoutDocker = true)

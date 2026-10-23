@@ -22,7 +22,16 @@ import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(classes = portal.attendance.AttendanceServiceApplication.class, properties = {
+        "spring.flyway.enabled=false",
+        "spring.autoconfigure.exclude=" +
+                "org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration," +
+                "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration," +
+                "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration," +
+                "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
+})
 @ActiveProfiles("test")
 @DisabledIf("isDockerNotAvailable")
 @Testcontainers(disabledWithoutDocker = true)

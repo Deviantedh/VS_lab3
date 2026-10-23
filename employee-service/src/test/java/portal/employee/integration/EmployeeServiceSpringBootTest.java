@@ -23,7 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = {
+@SpringBootTest(classes = portal.employee.EmployeeServiceApplication.class, properties = {
         "spring.autoconfigure.exclude=" +
                 "org.springframework.boot.r2dbc.autoconfigure.R2dbcAutoConfiguration," +
                 "org.springframework.boot.r2dbc.autoconfigure.R2dbcInitializationAutoConfiguration," +
