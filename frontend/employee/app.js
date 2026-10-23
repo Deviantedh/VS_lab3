@@ -108,6 +108,9 @@ function updateAuthUI() {
 
   if (!auth.isAuthenticated()) {
     if (usernameEl) usernameEl.textContent = 'Не авторизован';
+    if (avatarEl && !avatarEl.querySelector('img')) {
+      avatarEl.innerHTML = '<img src="avatar.png" alt="Avatar" class="avatar-icon">';
+    }
     if (roleBadgeEl) {
       roleBadgeEl.className = 'badge badge-gray';
       roleBadgeEl.textContent = 'Гость';
@@ -121,8 +124,8 @@ function updateAuthUI() {
   const empId = auth.getEmployeeId();
 
   if (usernameEl) usernameEl.textContent = login;
-  if (avatarEl) {
-    avatarEl.textContent = login ? login.charAt(0).toUpperCase() : 'U';
+  if (avatarEl && !avatarEl.querySelector('img')) {
+    avatarEl.innerHTML = '<img src="avatar.png" alt="Avatar" class="avatar-icon">';
   }
   if (roleBadgeEl) {
     roleBadgeEl.className = `badge ${getRoleBadgeClass(role)}`;

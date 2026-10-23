@@ -23,34 +23,41 @@
 
     <nav class="nav-menu">
       <button class="nav-item active" data-section="dashboard">
-        Сводка
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+        <span>Сводка</span>
       </button>
       <button class="nav-item" data-section="organization">
-        Организация
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 21h18"></path><path d="M6 21V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v14"></path><path d="M10 9h4"></path><path d="M10 13h4"></path><path d="M10 17h4"></path></svg>
+        <span>Организация</span>
       </button>
       <button class="nav-item" data-section="employees">
-        Сотрудники
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Сотрудники</span>
       </button>
       <button class="nav-item" data-section="users">
-        Пользователи и Доступ
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Пользователи и Доступ</span>
       </button>
       <button class="nav-item" data-section="shifts">
-        Смены и Графики
+        <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Смены и Графики</span>
       </button>
       <button class="nav-item" data-section="requests">
-        Заявки (Отпуска)
+        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+        <span>Заявки (Отпуска)</span>
       </button>
       <button class="nav-item" data-section="attendance">
-        Табель явок
+        <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Табель явок</span>
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <a href="http://localhost:3001" target="_blank" class="sidebar-link">
-        Открыть кабинет сотрудника
+        Открыть кабинет сотрудника ↗
       </a>
       <a href="http://localhost:8080/swagger-ui.html" target="_blank" class="sidebar-link">
-        Документация Swagger API
+        Документация Swagger API ↗
       </a>
     </div>
   </aside>
@@ -67,7 +74,9 @@
         <!-- Панель JWT Авторизации -->
         <div class="user-auth-bar" id="user-auth-bar">
           <div class="auth-user-info" id="auth-user-info">
-            <span class="auth-avatar" id="auth-avatar">U</span>
+            <span class="auth-avatar" id="auth-avatar" title="Профиль">
+              <img src="avatar.png" alt="User" class="avatar-icon">
+            </span>
             <div class="auth-details">
               <span class="auth-username" id="auth-username">admin</span>
               <span class="badge badge-red" id="auth-role-badge">ADMIN (Супервайзер)</span>
@@ -75,13 +84,15 @@
           </div>
 
           <button type="button" class="btn btn-secondary btn-sm" id="btn-inspect-jwt" title="Просмотреть текущий JWT токен и claims">
-            JWT
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+            <span>JWT</span>
           </button>
 
           <!-- Быстрое переключение учетной записи -->
           <div class="dropdown-container">
             <button type="button" class="btn btn-secondary btn-sm" id="btn-quick-switch" title="Быстро войти под другой системной ролью">
-              Сменить роль ▾
+              <svg class="btn-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 8 20 11 23 8"></polyline></svg>
+              <span>Сменить роль ▾</span>
             </button>
             <div class="dropdown-menu" id="quick-switch-menu" style="display: none;">
               <div class="dropdown-header">Быстрый вход для защиты (1 клик):</div>
@@ -104,7 +115,8 @@
           </div>
 
           <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" title="Выйти из учетной записи">
-            Выйти
+            <svg class="btn-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Выйти</span>
           </button>
         </div>
 
@@ -143,10 +155,22 @@
             <h3>Быстрые действия</h3>
           </div>
           <div class="panel-body" style="display: flex; gap: 12px; flex-wrap: wrap;">
-            <button class="btn btn-primary" id="btn-quick-add-company">+ Новая компания</button>
-            <button class="btn btn-primary" id="btn-quick-add-branch">+ Новый филиал</button>
-            <button class="btn btn-primary" id="btn-quick-add-employee">+ Новый сотрудник</button>
-            <button class="btn btn-secondary" id="btn-refresh-all">Обновить данные</button>
+            <button class="btn btn-primary" id="btn-quick-add-company">
+              <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Новая компания</span>
+            </button>
+            <button class="btn btn-primary" id="btn-quick-add-branch">
+              <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Новый филиал</span>
+            </button>
+            <button class="btn btn-primary" id="btn-quick-add-employee">
+              <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Новый сотрудник</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-refresh-all">
+              <svg class="btn-icon" viewBox="0 0 24 24"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              <span>Обновить данные</span>
+            </button>
           </div>
         </div>
 
@@ -169,7 +193,10 @@
           <div class="panel">
             <div class="panel-header">
               <h3>Компании (Юрлица)</h3>
-              <button class="btn btn-primary btn-sm" id="btn-add-company">+ Добавить</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-company">
+                <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Добавить</span>
+              </button>
             </div>
             <div class="panel-body table-responsive">
               <table class="data-table">
@@ -191,7 +218,10 @@
           <div class="panel">
             <div class="panel-header">
               <h3>Справочник должностей</h3>
-              <button class="btn btn-primary btn-sm" id="btn-add-position">+ Добавить</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-position">
+                <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Добавить</span>
+              </button>
             </div>
             <div class="panel-body table-responsive">
               <table class="data-table">
@@ -218,7 +248,10 @@
               <select id="branch-company-select" class="form-control" style="width: auto;">
                 <option value="">Выберите компанию...</option>
               </select>
-              <button class="btn btn-primary btn-sm" id="btn-add-branch">+ Добавить филиал</button>
+              <button class="btn btn-primary btn-sm" id="btn-add-branch">
+                <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Добавить филиал</span>
+              </button>
             </div>
           </div>
           <div class="panel-body table-responsive">
@@ -247,8 +280,14 @@
           <div class="panel-header">
             <h3>Список сотрудников</h3>
             <div style="display: flex; gap: 10px;">
-              <button class="btn btn-secondary btn-sm" id="btn-assign-employee-branch">Назначить в филиал</button>
-              <button class="btn btn-primary btn-sm" id="btn-add-employee">+ Добавить сотрудника</button>
+              <button class="btn btn-secondary btn-sm" id="btn-assign-employee-branch">
+                <svg class="btn-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle></svg>
+                <span>Назначить в филиал</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-add-employee">
+                <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Добавить сотрудника</span>
+              </button>
             </div>
           </div>
           <div class="panel-body table-responsive">
@@ -283,7 +322,10 @@
                 Управление доступом к системе (0: ADMIN, 1: HR, 2: MANAGER, 3: EMPLOYEE)
               </p>
             </div>
-            <button class="btn btn-primary btn-sm" id="btn-add-user">+ Создать пользователя</button>
+            <button class="btn btn-primary btn-sm" id="btn-add-user">
+              <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Создать пользователя</span>
+            </button>
           </div>
           <div class="panel-body table-responsive">
             <table class="data-table">
@@ -319,8 +361,14 @@
               <select id="schedule-list-select" class="form-control" style="width: auto;">
                 <option value="">Выберите график...</option>
               </select>
-              <button class="btn btn-secondary btn-sm" id="btn-create-schedule">+ Создать график</button>
-              <button class="btn btn-primary btn-sm" id="btn-create-shift">+ Добавить смену</button>
+              <button class="btn btn-secondary btn-sm" id="btn-create-schedule">
+                <svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Создать график</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="btn-create-shift">
+                <svg class="btn-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>Добавить смену</span>
+              </button>
             </div>
           </div>
           <div class="panel-body">

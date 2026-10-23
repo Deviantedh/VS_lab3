@@ -174,6 +174,11 @@ function updateAuthUI() {
   const usernameEl = document.getElementById('auth-username');
   const roleBadgeEl = document.getElementById('auth-role-badge');
   const addBtn = document.getElementById('btn-add-user');
+  const avatarEl = document.getElementById('auth-avatar');
+
+  if (avatarEl && !avatarEl.querySelector('img')) {
+    avatarEl.innerHTML = '<img src="avatar.png" alt="Avatar" class="avatar-icon">';
+  }
 
   if (!auth.isAuthenticated()) {
     if (usernameEl) usernameEl.textContent = 'Не авторизован';
@@ -187,8 +192,6 @@ function updateAuthUI() {
 
   const role = auth.getRole();
   const login = auth.getLogin();
-  const avatarEl = document.getElementById('auth-avatar');
-  if (avatarEl) avatarEl.textContent = login ? login.charAt(0).toUpperCase() : 'U';
 
   if (usernameEl) usernameEl.textContent = login;
   if (roleBadgeEl) {
@@ -207,12 +210,12 @@ function updateAuthUI() {
       addBtn.disabled = false;
       addBtn.style.opacity = '1';
       addBtn.title = 'Создать нового пользователя';
-      addBtn.textContent = '+ Создать пользователя';
+      addBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> <span>Создать пользователя</span>';
     } else {
       addBtn.disabled = true;
       addBtn.style.opacity = '0.5';
       addBtn.title = 'Создавать пользователей могут только супервайзеры (ADMIN)';
-      addBtn.textContent = 'Только супервайзер (ADMIN)';
+      addBtn.innerHTML = '<svg class="btn-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> <span>Только супервайзер (ADMIN)</span>';
     }
   }
 

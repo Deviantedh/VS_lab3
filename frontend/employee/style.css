@@ -160,24 +160,53 @@ header.app-header {
   gap: 10px;
 }
 
-/* Glossy Avatar Orb */
+/* Glossy Avatar Orb with MSN Aqua Buddy */
 .auth-avatar {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #d8f1fe 55%, #bae6fd 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 35% 25%, #ffffff 0%, #c4eeea 55%, #76d7cb 100%);
+  border: 2px solid rgba(255, 255, 255, 0.95);
   box-shadow: 
-    0 2px 6px rgba(2, 132, 199, 0.25),
+    0 3px 8px rgba(13, 148, 136, 0.35),
     inset 0 1px 2px rgba(255, 255, 255, 1),
-    inset 0 -1px 3px rgba(3, 105, 161, 0.25);
+    inset 0 -1px 3px rgba(15, 118, 110, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  color: #0284c7;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.auth-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 
+    0 4px 14px rgba(13, 148, 136, 0.45),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+}
+
+.auth-avatar img.avatar-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+}
+
+.auth-avatar::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  right: 4px;
+  height: 42%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 50% 50% 40% 40%;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .auth-details {
@@ -192,12 +221,12 @@ header.app-header {
   color: var(--text-dark);
 }
 
-/* ================= Main Layout ================= */
+/* ================= Main Layout (Fluid Scaling across screen) ================= */
 .main-wrapper {
-  max-width: 1240px;
   width: 100%;
-  margin: 0 auto;
-  padding: 26px 20px;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 22px clamp(16px, 2.5vw, 36px);
   display: flex;
   flex-direction: column;
   gap: 22px;
@@ -207,15 +236,18 @@ header.app-header {
 /* ================= Frutiger Aero Tabs ================= */
 nav.employee-nav {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(235, 246, 254, 0.6) 100%);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
-  padding: 8px;
+  padding: 8px 12px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-glass);
   box-shadow: var(--aero-shadow);
-  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .tab-btn {
@@ -223,17 +255,18 @@ nav.employee-nav {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 22px;
+  gap: 8px;
+  padding: 9px 18px;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
 }
 
 .tab-btn:hover {
@@ -241,6 +274,26 @@ nav.employee-nav {
   color: var(--primary);
   border-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 2px 6px rgba(2, 132, 199, 0.1);
+}
+
+/* Vector / Aero Icons in Tabs & Buttons */
+.tab-icon, .nav-icon, .btn-icon {
+  width: 17px;
+  height: 17px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.tab-btn:hover .tab-icon,
+.nav-item:hover .nav-icon,
+.btn:hover .btn-icon {
+  transform: scale(1.12);
 }
 
 /* Active Glossy Tab Pill */
@@ -257,6 +310,11 @@ nav.employee-nav {
     inset 0 1px 1px rgba(255, 255, 255, 0.9),
     inset 0 -1px 2px rgba(0, 40, 90, 0.3);
   text-shadow: 0 1px 2px rgba(0, 30, 70, 0.6);
+}
+
+.tab-btn.active .tab-icon {
+  stroke: #ffffff;
+  filter: drop-shadow(0 1px 2px rgba(0, 30, 70, 0.5));
 }
 
 .tab-btn.active::before {
@@ -391,11 +449,19 @@ nav.employee-nav {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   letter-spacing: 0.4px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
   border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.btn-tracker .btn-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.4;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }
 
 .btn-tracker::before {
