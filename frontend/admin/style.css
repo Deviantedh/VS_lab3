@@ -70,27 +70,49 @@ body {
   line-height: 1.5;
   display: flex;
   min-height: 100vh;
-  background: 
-    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
-    radial-gradient(circle at 85% 15%, rgba(121, 188, 249, 0.5) 0%, transparent 55%),
-    radial-gradient(circle at 50% 90%, rgba(103, 182, 3, 0.1) 0%, transparent 60%),
-    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 30%, #e8f4fc 65%, var(--sky-bottom) 100%) fixed;
+  position: relative;
+  background-color: #d2e8f8;
+  background-image: 
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.75) 0%, transparent 40%),
+    radial-gradient(circle at 85% 15%, rgba(121, 188, 249, 0.45) 0%, transparent 55%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 30%, #e8f4fc 65%, var(--sky-bottom) 100%);
   background-attachment: fixed;
+}
+
+/* Translucent Frutiger Aero Wallpaper Layer */
+.aero-wallpaper-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: 
+    linear-gradient(180deg, 
+      rgba(121, 188, 249, 0.25) 0%, 
+      rgba(203, 234, 253, 0.2) 35%, 
+      rgba(246, 241, 250, 0.35) 100%),
+    url("bg.png") no-repeat center bottom / cover;
+  opacity: 0.46;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
 }
 
 /* ================= Sidebar (Aero Glass Column) ================= */
 aside.sidebar {
   width: 270px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(235, 246, 254, 0.75) 100%);
-  backdrop-filter: blur(16px) saturate(190%);
-  -webkit-backdrop-filter: blur(16px) saturate(190%);
-  border-right: 1px solid var(--border-glass-rim);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82) 0%, rgba(235, 246, 254, 0.65) 100%);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-right: 1.5px solid rgba(255, 255, 255, 0.85);
   box-shadow: 
-    4px 0 24px rgba(12, 74, 110, 0.08),
-    inset -1px 0 1px rgba(255, 255, 255, 0.9);
+    4px 0 28px rgba(10, 66, 189, 0.08),
+    inset -1px 0 2px rgba(255, 255, 255, 0.95);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .brand {
@@ -253,10 +275,10 @@ nav.nav-menu {
 }
 
 header.top-header {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(235, 246, 254, 0.78) 100%);
-  backdrop-filter: blur(16px) saturate(190%);
-  -webkit-backdrop-filter: blur(16px) saturate(190%);
-  border-bottom: 1px solid var(--border-glass-rim);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(235, 246, 254, 0.68) 100%);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.9);
   padding: 14px 32px;
   display: flex;
   justify-content: space-between;
@@ -265,8 +287,9 @@ header.top-header {
   top: 0;
   z-index: 90;
   box-shadow: 
-    0 4px 20px rgba(12, 74, 110, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
+    0 4px 24px rgba(10, 66, 189, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 1px rgba(121, 188, 249, 0.2);
 }
 
 .header-title h2 {
@@ -441,25 +464,30 @@ header.top-header {
   color: var(--text-muted);
 }
 
-/* ================= Panels (Aero Glass Windows) ================= */
+/* ================= Liquid Glass Panels ================= */
 .panel {
-  background: var(--surface-glass);
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px) saturate(180%);
-  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px) saturate(200%);
+  -webkit-backdrop-filter: blur(20px) saturate(200%);
+  border: 1.5px solid rgba(255, 255, 255, 0.88);
   border-radius: var(--radius-lg);
-  box-shadow: var(--aero-shadow);
+  box-shadow: 
+    0 12px 36px -4px rgba(10, 66, 189, 0.12),
+    0 4px 12px -2px rgba(10, 66, 189, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 2px rgba(121, 188, 249, 0.25);
   overflow: hidden;
+  position: relative;
 }
 
 .panel-header {
   padding: 18px 24px;
-  background: linear-gradient(180deg, #f0f8fd 0%, #dcf0fb 100%);
+  background: linear-gradient(180deg, rgba(240, 248, 253, 0.8) 0%, rgba(220, 240, 251, 0.7) 100%);
   border-bottom: 1px solid var(--border-glass-rim);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
 .panel-header h3 {
@@ -508,18 +536,20 @@ table.data-table th:last-child {
 
 table.data-table td {
   padding: 13px 16px;
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(200, 225, 242, 0.5);
   color: var(--text-main);
   transition: background 0.12s ease;
 }
 
 table.data-table tr:nth-child(even) td {
-  background: rgba(244, 250, 254, 0.75);
+  background: rgba(244, 250, 254, 0.68);
 }
 
 table.data-table tr:hover td {
-  background: rgba(224, 242, 254, 0.85);
+  background: rgba(220, 240, 254, 0.84);
 }
 
 table.data-table tr:last-child td {
@@ -824,14 +854,14 @@ table.data-table tr:last-child td {
   font-weight: 700;
 }
 
-/* ================= Aero Glass Dialogs & Modals ================= */
+/* ================= Liquid Glass Dialogs & Modals ================= */
 dialog {
-  border: 1px solid var(--border-glass);
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 248, 255, 0.95) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(240, 248, 255, 0.8) 100%);
   box-shadow: 
-    0 24px 60px rgba(12, 74, 110, 0.28),
-    0 8px 24px rgba(12, 74, 110, 0.15),
+    0 24px 60px rgba(10, 66, 189, 0.25),
+    0 8px 24px rgba(10, 66, 189, 0.12),
     inset 0 1px 2px rgba(255, 255, 255, 1);
   padding: 0;
   position: fixed;
@@ -839,14 +869,15 @@ dialog {
   left: 50%;
   transform: translate(-50%, -50%);
   margin: 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  overflow: hidden;
 }
 
 dialog::backdrop {
-  background: radial-gradient(circle at 50% 50%, rgba(12, 74, 110, 0.4) 0%, rgba(8, 47, 73, 0.65) 100%);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: radial-gradient(circle at 50% 50%, rgba(10, 66, 189, 0.35) 0%, rgba(8, 47, 73, 0.6) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .modal-header {
